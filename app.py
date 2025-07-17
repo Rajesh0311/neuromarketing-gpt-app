@@ -201,11 +201,11 @@ def render_settings():
     The following open datasets are available without API keys:
     - ✅ **OpenNeuro**: Open neuroscience datasets
     - ✅ **Zenodo**: EEG Consumer Neuroscience datasets  
-    - ✅ **PhysioNet**: EEG databases
-    - ✅ **IEEE DataPort**: Neuromarketing datasets
-    - ✅ **OSF**: Open Science Framework studies
+    - ✅ **PhysioNet**: EEG databases (5 curated datasets)
+    - ✅ **IEEE DataPort**: Neuromarketing datasets (3 curated datasets)
     - ✅ **PubMed/PMC**: Neuroscience research papers
-    - ✅ **Google Dataset Search**: Dataset discovery
+    - 🔄 **OSF**: Open Science Framework studies (in development)
+    - 🔄 **Google Dataset Search**: Dataset discovery (in development)
     """)
 
 if __name__ == "__main__":

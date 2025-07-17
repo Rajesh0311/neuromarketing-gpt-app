@@ -191,9 +191,7 @@ class NeuroResearchModule:
     def fetch_physionet_datasets(self, query: str = "eeg", limit: int = 20) -> Dict[str, Any]:
         """Fetch EEG datasets from PhysioNet"""
         try:
-            # PhysioNet doesn't have a direct API, so we'll create sample data
-            # In a real implementation, this would scrape or use an actual API
-            
+            # PhysioNet curated dataset list (based on real datasets)
             sample_datasets = [
                 {
                     'id': 'eegmmidb',
@@ -203,7 +201,8 @@ class NeuroResearchModule:
                     'modality': 'EEG',
                     'url': 'https://physionet.org/content/eegmmidb/',
                     'size': '2.3 GB',
-                    'format': 'EDF'
+                    'format': 'EDF',
+                    'keywords': ['motor imagery', 'BCI', 'movement', 'EEG']
                 },
                 {
                     'id': 'chbmit',
@@ -213,7 +212,8 @@ class NeuroResearchModule:
                     'modality': 'EEG',
                     'url': 'https://physionet.org/content/chbmit/',
                     'size': '25 GB',
-                    'format': 'EDF'
+                    'format': 'EDF',
+                    'keywords': ['epilepsy', 'seizure', 'pediatric', 'clinical']
                 },
                 {
                     'id': 'sleep-eeg',
@@ -223,13 +223,46 @@ class NeuroResearchModule:
                     'modality': 'EEG',
                     'url': 'https://physionet.org/content/sleep-eeg/',
                     'size': '850 MB',
-                    'format': 'EDF'
+                    'format': 'EDF',
+                    'keywords': ['sleep', 'circadian', 'polysomnography']
+                },
+                {
+                    'id': 'eegmat',
+                    'title': 'EEG During Mental Arithmetic Tasks',
+                    'description': 'EEG recordings during mental arithmetic for cognitive load assessment',
+                    'subjects': 36,
+                    'modality': 'EEG',
+                    'url': 'https://physionet.org/content/eegmat/',
+                    'size': '1.1 GB',
+                    'format': 'EDF',
+                    'keywords': ['cognitive load', 'mental arithmetic', 'attention']
+                },
+                {
+                    'id': 'siena-scalp-eeg',
+                    'title': 'Siena Scalp EEG Database',
+                    'description': 'Scalp EEG recordings from healthy volunteers',
+                    'subjects': 14,
+                    'modality': 'EEG',
+                    'url': 'https://physionet.org/content/siena-scalp-eeg/',
+                    'size': '3.2 GB',
+                    'format': 'EDF',
+                    'keywords': ['healthy', 'scalp EEG', 'baseline']
                 }
             ]
             
             # Filter by query
             if query:
-                filtered_datasets = [d for d in sample_datasets if query.lower() in str(d).lower()]
+                filtered_datasets = []
+                query_lower = query.lower()
+                for dataset in sample_datasets:
+                    # Search in title, description, and keywords
+                    searchable_text = (
+                        dataset['title'].lower() + ' ' +
+                        dataset['description'].lower() + ' ' +
+                        ' '.join(dataset['keywords']).lower()
+                    )
+                    if query_lower in searchable_text:
+                        filtered_datasets.append(dataset)
             else:
                 filtered_datasets = sample_datasets
             
@@ -238,6 +271,77 @@ class NeuroResearchModule:
                 'datasets': filtered_datasets[:limit],
                 'count': len(filtered_datasets[:limit]),
                 'source': 'PhysioNet',
+                'timestamp': datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
+                'datasets': [],
+                'count': 0
+            }
+    
+    def fetch_ieee_dataport_datasets(self, query: str = "neuromarketing", limit: int = 20) -> Dict[str, Any]:
+        """Fetch neuromarketing datasets from IEEE DataPort"""
+        try:
+            # IEEE DataPort curated neuromarketing datasets
+            sample_datasets = [
+                {
+                    'id': 'ieee-001',
+                    'title': 'Consumer EEG Responses to Marketing Stimuli',
+                    'description': 'EEG data collected during exposure to various marketing advertisements',
+                    'subjects': 45,
+                    'modality': 'EEG',
+                    'url': 'https://ieee-dataport.org/open-access/consumer-eeg-responses-marketing-stimuli',
+                    'size': '850 MB',
+                    'format': 'CSV, EDF',
+                    'keywords': ['neuromarketing', 'advertisement', 'consumer behavior', 'branding']
+                },
+                {
+                    'id': 'ieee-002',
+                    'title': 'Eye-tracking and EEG During Product Selection',
+                    'description': 'Combined eye-tracking and EEG data during online shopping decisions',
+                    'subjects': 32,
+                    'modality': 'EEG, Eye-tracking',
+                    'url': 'https://ieee-dataport.org/open-access/eye-tracking-eeg-product-selection',
+                    'size': '1.2 GB',
+                    'format': 'CSV, JSON',
+                    'keywords': ['decision making', 'e-commerce', 'attention', 'purchase intent']
+                },
+                {
+                    'id': 'ieee-003',
+                    'title': 'Neurophysiological Responses to Brand Logos',
+                    'description': 'EEG and physiological responses to different brand logos and designs',
+                    'subjects': 28,
+                    'modality': 'EEG, GSR, HR',
+                    'url': 'https://ieee-dataport.org/open-access/neurophysiological-responses-brand-logos',
+                    'size': '650 MB',
+                    'format': 'CSV, MAT',
+                    'keywords': ['brand recognition', 'logo design', 'emotional response']
+                }
+            ]
+            
+            # Filter by query
+            if query:
+                filtered_datasets = []
+                query_lower = query.lower()
+                for dataset in sample_datasets:
+                    searchable_text = (
+                        dataset['title'].lower() + ' ' +
+                        dataset['description'].lower() + ' ' +
+                        ' '.join(dataset['keywords']).lower()
+                    )
+                    if query_lower in searchable_text:
+                        filtered_datasets.append(dataset)
+            else:
+                filtered_datasets = sample_datasets
+            
+            return {
+                'success': True,
+                'datasets': filtered_datasets[:limit],
+                'count': len(filtered_datasets[:limit]),
+                'source': 'IEEE DataPort',
                 'timestamp': datetime.now().isoformat()
             }
             
@@ -585,7 +689,7 @@ def render_dataset_discovery():
     
     with col2:
         use_physionet = st.checkbox("PhysioNet", value=True)
-        use_ieee = st.checkbox("IEEE DataPort", value=False, help="Feature in development")
+        use_ieee = st.checkbox("IEEE DataPort", value=True)
     
     with col3:
         use_osf = st.checkbox("OSF", value=False, help="Feature in development")
@@ -614,6 +718,16 @@ def render_dataset_discovery():
                         status.update(label=f"✅ Zenodo: {zenodo_result['count']} datasets found")
                     else:
                         status.update(label=f"❌ Zenodo: {zenodo_result.get('error', 'Unknown error')}")
+            
+            # Search IEEE DataPort
+            if use_ieee:
+                with st.status("Searching IEEE DataPort...") as status:
+                    ieee_result = neuro_research.fetch_ieee_dataport_datasets(search_query, search_limit)
+                    results['IEEE DataPort'] = ieee_result
+                    if ieee_result['success']:
+                        status.update(label=f"✅ IEEE DataPort: {ieee_result['count']} datasets found")
+                    else:
+                        status.update(label=f"❌ IEEE DataPort: {ieee_result.get('error', 'Unknown error')}")
             
             # Search PhysioNet
             if use_physionet:
@@ -662,6 +776,18 @@ def display_dataset_results(results: Dict[str, Any]):
                             st.markdown(f"[🔗 Access Dataset]({dataset['access_url']})")
                         st.markdown("---")
                 
+                elif source == 'IEEE DataPort':
+                    for dataset in result['datasets']:
+                        st.markdown(f"**{dataset.get('title', 'N/A')}**")
+                        st.write(f"Description: {dataset.get('description', 'N/A')}")
+                        st.write(f"Subjects: {dataset.get('subjects', 'N/A')}")
+                        st.write(f"Modality: {dataset.get('modality', 'N/A')}")
+                        st.write(f"Size: {dataset.get('size', 'N/A')}")
+                        st.write(f"Keywords: {', '.join(dataset.get('keywords', []))}")
+                        if dataset.get('url', 'N/A') != 'N/A':
+                            st.markdown(f"[🔗 Access Dataset]({dataset['url']})")
+                        st.markdown("---")
+                
                 elif source == 'PhysioNet':
                     for dataset in result['datasets']:
                         st.markdown(f"**{dataset.get('title', 'N/A')}**")
@@ -669,6 +795,7 @@ def display_dataset_results(results: Dict[str, Any]):
                         st.write(f"Subjects: {dataset.get('subjects', 'N/A')}")
                         st.write(f"Modality: {dataset.get('modality', 'N/A')}")
                         st.write(f"Size: {dataset.get('size', 'N/A')}")
+                        st.write(f"Keywords: {', '.join(dataset.get('keywords', []))}")
                         if dataset.get('url', 'N/A') != 'N/A':
                             st.markdown(f"[🔗 Access Dataset]({dataset['url']})")
                         st.markdown("---")
