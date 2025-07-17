@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroInsight - Media Analysis Platform</title>
+    <link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">🧠 NeuroInsight</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#analysis" class="active">Analysis</a></li>
+                <li><a href="#results">Results</a></li>
+                <li><a href="support.html">Support</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="app-container">
+        <div class="container">
+            <div class="app-header">
+                <h1>Media Analysis Platform</h1>
+                <p>Upload and analyze your marketing content across all media types</p>
+            </div>
+
+            <div class="media-input-sections">
+                <!-- Text Input Module -->
+                <section class="input-section" id="text-input">
+                    <div class="section-header">
+                        <h2>📝 Text Input</h2>
+                        <p>Analyze advertisement copy, brand messaging, and marketing content</p>
+                    </div>
+                    <div class="input-content">
+                        <div class="text-input-tabs">
+                            <button class="tab-btn active" data-tab="ad-copy">Ad Copy</button>
+                            <button class="tab-btn" data-tab="brand-messaging">Brand Messaging</button>
+                            <button class="tab-btn" data-tab="social-content">Social Media</button>
+                            <button class="tab-btn" data-tab="website-copy">Website Copy</button>
+                        </div>
+                        
+                        <div class="tab-content active" id="ad-copy">
+                            <textarea 
+                                placeholder="Enter your advertisement text, marketing copy, or campaign messaging here..."
+                                id="ad-copy-text"
+                                rows="8">
+                            </textarea>
+                            <div class="text-metrics">
+                                <span class="character-count">0 characters</span>
+                                <span class="word-count">0 words</span>
+                                <span class="readability-score">Readability: -</span>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="brand-messaging">
+                            <textarea 
+                                placeholder="Enter company slogans, taglines, value propositions..."
+                                id="brand-messaging-text"
+                                rows="6">
+                            </textarea>
+                            <div class="text-metrics">
+                                <span class="character-count">0 characters</span>
+                                <span class="word-count">0 words</span>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="social-content">
+                            <textarea 
+                                placeholder="Enter social media posts, captions, hashtags..."
+                                id="social-content-text"
+                                rows="6">
+                            </textarea>
+                            <div class="text-metrics">
+                                <span class="character-count">0 characters</span>
+                                <span class="hashtag-count">0 hashtags</span>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="website-copy">
+                            <textarea 
+                                placeholder="Enter landing page text, product descriptions, email content..."
+                                id="website-copy-text"
+                                rows="8">
+                            </textarea>
+                            <div class="text-metrics">
+                                <span class="character-count">0 characters</span>
+                                <span class="word-count">0 words</span>
+                                <span class="readability-score">Readability: -</span>
+                            </div>
+                        </div>
+
+                        <div class="text-actions">
+                            <button class="action-btn secondary" id="clear-text">Clear</button>
+                            <button class="action-btn secondary" id="paste-clipboard">Paste from Clipboard</button>
+                            <button class="action-btn primary" id="analyze-text">Analyze Text</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Image Upload Module -->
+                <section class="input-section" id="image-upload">
+                    <div class="section-header">
+                        <h2>🖼️ Image Upload</h2>
+                        <p>Upload advertisements, product photos, brand assets, and visual content</p>
+                    </div>
+                    <div class="input-content">
+                        <div class="upload-zone" id="image-drop-zone">
+                            <div class="upload-icon">📁</div>
+                            <h3>Drag & Drop Images Here</h3>
+                            <p>or click to browse files</p>
+                            <p class="supported-formats">Supports: JPG, PNG, GIF, WEBP, SVG</p>
+                            <input type="file" id="image-file-input" multiple accept=".jpg,.jpeg,.png,.gif,.webp,.svg" hidden>
+                        </div>
+                        
+                        <div class="uploaded-files" id="image-preview-container">
+                            <!-- Uploaded images will appear here -->
+                        </div>
+
+                        <div class="upload-actions">
+                            <button class="action-btn secondary" id="clear-images">Clear All</button>
+                            <button class="action-btn secondary" id="batch-upload-images">Batch Upload</button>
+                            <button class="action-btn primary" id="analyze-images">Analyze Images</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Video Upload Module -->
+                <section class="input-section" id="video-upload">
+                    <div class="section-header">
+                        <h2>🎥 Video Upload</h2>
+                        <p>Upload advertisement videos, product demos, and brand content</p>
+                    </div>
+                    <div class="input-content">
+                        <div class="upload-zone" id="video-drop-zone">
+                            <div class="upload-icon">🎬</div>
+                            <h3>Drag & Drop Videos Here</h3>
+                            <p>or click to browse files</p>
+                            <p class="supported-formats">Supports: MP4, MOV, AVI, WEBM</p>
+                            <input type="file" id="video-file-input" multiple accept=".mp4,.mov,.avi,.webm" hidden>
+                        </div>
+                        
+                        <div class="uploaded-files" id="video-preview-container">
+                            <!-- Uploaded videos will appear here -->
+                        </div>
+
+                        <div class="upload-actions">
+                            <button class="action-btn secondary" id="clear-videos">Clear All</button>
+                            <button class="action-btn primary" id="analyze-videos">Analyze Videos</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Audio Upload Module -->
+                <section class="input-section" id="audio-upload">
+                    <div class="section-header">
+                        <h2>🎵 Audio Upload</h2>
+                        <p>Upload radio ads, podcasts, voice-overs, and audio content</p>
+                    </div>
+                    <div class="input-content">
+                        <div class="upload-zone" id="audio-drop-zone">
+                            <div class="upload-icon">🎙️</div>
+                            <h3>Drag & Drop Audio Here</h3>
+                            <p>or click to browse files</p>
+                            <p class="supported-formats">Supports: MP3, WAV, AAC, OGG</p>
+                            <input type="file" id="audio-file-input" multiple accept=".mp3,.wav,.aac,.ogg" hidden>
+                        </div>
+                        
+                        <div class="uploaded-files" id="audio-preview-container">
+                            <!-- Uploaded audio will appear here -->
+                        </div>
+
+                        <div class="upload-actions">
+                            <button class="action-btn secondary" id="clear-audio">Clear All</button>
+                            <button class="action-btn primary" id="analyze-audio">Analyze Audio</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- URL Analysis Module -->
+                <section class="input-section" id="url-analysis">
+                    <div class="section-header">
+                        <h2>🌐 URL Analysis</h2>
+                        <p>Analyze websites, social media profiles, and online content</p>
+                    </div>
+                    <div class="input-content">
+                        <div class="url-input-group">
+                            <input 
+                                type="url" 
+                                id="url-input" 
+                                placeholder="https://example.com or social media URL"
+                                class="url-input">
+                            <button class="action-btn primary" id="capture-url">Capture & Analyze</button>
+                        </div>
+                        
+                        <div class="url-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="mobile-preview"> Mobile Preview
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="desktop-preview" checked> Desktop Preview
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="full-page-capture"> Full Page Capture
+                            </label>
+                        </div>
+
+                        <div class="url-previews" id="url-preview-container">
+                            <!-- URL previews will appear here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Campaign Analysis Module -->
+                <section class="input-section" id="campaign-analysis">
+                    <div class="section-header">
+                        <h2>📊 Campaign Analysis</h2>
+                        <p>Analyze multiple assets together for comprehensive campaign insights</p>
+                    </div>
+                    <div class="input-content">
+                        <div class="campaign-summary">
+                            <div class="summary-card">
+                                <h4>Content Summary</h4>
+                                <div class="content-counts">
+                                    <span class="count-item">📝 <span id="text-count">0</span> Text Inputs</span>
+                                    <span class="count-item">🖼️ <span id="image-count">0</span> Images</span>
+                                    <span class="count-item">🎥 <span id="video-count">0</span> Videos</span>
+                                    <span class="count-item">🎵 <span id="audio-count">0</span> Audio Files</span>
+                                    <span class="count-item">🌐 <span id="url-count">0</span> URLs</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="campaign-actions">
+                            <button class="action-btn secondary" id="save-campaign">Save Campaign</button>
+                            <button class="action-btn secondary" id="export-campaign">Export Data</button>
+                            <button class="action-btn primary large" id="analyze-campaign">
+                                🚀 Analyze Complete Campaign
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Analysis Results Modal -->
+    <div class="modal" id="analysis-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Analysis Results</h2>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="analysis-results">
+                <!-- Analysis results will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>Analyzing Content...</h3>
+            <p id="loading-message">Processing your media content</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/app.js"></script>
+</body>
+</html>
