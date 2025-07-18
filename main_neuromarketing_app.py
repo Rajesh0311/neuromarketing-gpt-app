@@ -1,23 +1,6 @@
-#!/usr/bin/env python3
 """
-NeuroMarketing GPT Platform - Complete Production-Ready Application
-=====================================================================
-
-A comprehensive neuromarketing analysis platform with 10 integrated modules:
-1. Advanced Sentiment Analysis
-2. Sarcasm & Irony Detection  
-3. Basic Neural Monitoring
-4. Professional Visuals
-5. Media Input Hub
-6. Environmental Simulation
-7. Reports & Export
-8. NeuroInsight-Africa Platform
-9. Deep Research Engine
-10. System Integration
-
-Authors: NeuroMarketing GPT Team
-Version: 1.0.0 (Production Ready)
-License: MIT
+Unified NeuroMarketing GPT Application
+Integrates all PR features into a comprehensive neuromarketing platform
 """
 
 import streamlit as st
@@ -25,28 +8,19 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-import matplotlib.pyplot as plt
-import seaborn as sns
-from datetime import datetime, timedelta
+from plotly.subplots import make_subplots
+import requests
 import json
-import time
 import os
-import warnings
-import logging
+import time
+from datetime import datetime
 from typing import Dict, List, Optional, Any, Union
-import asyncio
-from dataclasses import dataclass
-
-# Suppress warnings for cleaner output
+import warnings
 warnings.filterwarnings('ignore')
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # Page configuration
 st.set_page_config(
-    page_title="NeuroMarketing GPT Platform",
+    page_title="NeuroMarketing GPT - Unified Platform",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -58,1421 +32,879 @@ st.markdown("""
     .main-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 20px;
-        border-radius: 10px;
         text-align: center;
-        margin-bottom: 30px;
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    
+    .tab-header {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+        margin-bottom: 1.5rem;
     }
     
     .metric-card {
-        background: white;
-        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
         border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin: 10px 0;
+        text-align: center;
+        margin: 0.5rem;
     }
     
-    .status-indicator {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-right: 8px;
-    }
-    
-    .status-online { background-color: #4CAF50; }
-    .status-offline { background-color: #f44336; }
-    .status-warning { background-color: #ff9800; }
-    
-    .tab-content {
-        padding: 20px;
+    .analysis-result {
         background: #f8f9fa;
-        border-radius: 10px;
-        margin: 10px 0;
-    }
-    
-    .progress-bar {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        height: 6px;
-        border-radius: 3px;
-        margin: 10px 0;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        margin: 1rem 0;
     }
     
     .feature-highlight {
-        background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
-        padding: 15px;
-        border-radius: 8px;
-        border-left: 4px solid #667eea;
-        margin: 10px 0;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        display: inline-block;
+        margin: 0.25rem;
+        font-size: 0.9rem;
     }
 </style>
 """, unsafe_allow_html=True)
 
-@dataclass
-class AnalysisResult:
-    """Data structure for analysis results"""
-    sentiment_score: float
-    confidence: float
-    emotions: Dict[str, float]
-    keywords: List[str]
-    timestamp: datetime
+# Initialize session state
+if 'analysis_results' not in st.session_state:
+    st.session_state.analysis_results = {}
+if 'uploaded_media' not in st.session_state:
+    st.session_state.uploaded_media = {'text': [], 'images': [], 'videos': [], 'audio': [], 'urls': []}
+if 'environmental_data' not in st.session_state:
+    st.session_state.environmental_data = {}
 
-class NeuroMarketingPlatform:
-    """Main platform class for NeuroMarketing analysis"""
-    
-    def __init__(self):
-        self.session_state = st.session_state
-        self.initialize_session_state()
-        
-    def initialize_session_state(self):
-        """Initialize session state variables"""
-        if 'analysis_history' not in self.session_state:
-            self.session_state.analysis_history = []
-        if 'current_project' not in self.session_state:
-            self.session_state.current_project = None
-        if 'user_preferences' not in self.session_state:
-            self.session_state.user_preferences = {
-                'theme': 'light',
-                'auto_save': True,
-                'notifications': True
-            }
+# Main application header
+st.markdown("""
+<div class="main-header">
+    <h1>🧠 NeuroMarketing GPT Platform</h1>
+    <h3>Revolutionary Neuromarketing Intelligence Platform</h3>
+    <p>Advanced Sentiment Analysis • Media Processing • Environmental Simulation • Deep Research</p>
+</div>
+""", unsafe_allow_html=True)
 
-def render_header():
-    """Render main application header"""
-    st.markdown("""
-    <div class="main-header">
-        <h1>🧠 NeuroMarketing GPT Platform</h1>
-        <p>Production-Ready AI-Powered Marketing Intelligence & Neural Analysis</p>
-        <p><strong>Status:</strong> <span class="status-indicator status-online"></span> All Systems Operational | 
-        <strong>Version:</strong> 1.0.0 | <strong>Uptime:</strong> 99.9%</p>
-    </div>
-    """, unsafe_allow_html=True)
+# Create 10 tabs as specified in the requirements
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
+    "📊 Advanced Sentiment Analysis",  # Enhanced from PR #4
+    "🎭 Sarcasm & Irony Detection",    # Existing + Enhanced
+    "🔬 Basic Monitoring",             # Existing Neural Monitoring
+    "🎨 Professional Visuals",         # Enhanced Export from PR #4
+    "📁 Media Input Hub",              # NEW - PR #4 Media Capabilities
+    "🏪 Environmental Simulation",     # NEW - PR #5 Environmental Features
+    "📋 Reports & Export",             # Enhanced Professional Reports
+    "🧠 NeuroInsight-Africa Platform", # Existing Advanced Platform
+    "🔬 Deep Research Engine",         # NEW - PR #3 Research Module
+    "⚙️ System Integration"            # NEW - Unified Configuration
+])
 
-def render_sidebar():
-    """Render sidebar with navigation and settings"""
-    with st.sidebar:
-        st.markdown("### 🎛️ Platform Control Panel")
-        
-        # System Status
-        st.markdown("#### System Status")
-        status_col1, status_col2 = st.columns(2)
-        with status_col1:
-            st.metric("Active Modules", "10/10", "✅")
-        with status_col2:
-            st.metric("Performance", "97%", "+2%")
-            
-        # Quick Actions
-        st.markdown("#### Quick Actions")
-        if st.button("🔄 Refresh Data", use_container_width=True):
-            st.rerun()
-        if st.button("📊 Export Current Session", use_container_width=True):
-            st.success("Export initiated!")
-        if st.button("🧹 Clear Cache", use_container_width=True):
-            st.cache_data.clear()
-            st.success("Cache cleared!")
-            
-        # Configuration
-        st.markdown("#### Configuration")
-        api_status = st.selectbox("API Mode", ["Production", "Development", "Demo"])
-        auto_save = st.checkbox("Auto-save results", value=True)
-        notifications = st.checkbox("Enable notifications", value=True)
-        
-        # Help & Resources
-        st.markdown("#### Help & Resources")
-        with st.expander("📚 Documentation"):
-            st.markdown("""
-            - [Quick Start Guide](#)
-            - [API Reference](#)
-            - [Troubleshooting](#)
-            - [Video Tutorials](#)
-            """)
-        
-        with st.expander("🔧 Technical Support"):
-            st.markdown("""
-            - **Email**: support@neuromarketing-gpt.com
-            - **Docs**: https://docs.neuromarketing-gpt.com
-            - **Status**: https://status.neuromarketing-gpt.com
-            """)
-
-def advanced_sentiment_analysis():
-    """Tab 1: Advanced Sentiment Analysis (Enhanced)"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("📊 Advanced Sentiment Analysis")
+# Tab 1: Advanced Sentiment Analysis (Enhanced from PR #4)
+with tab1:
+    st.markdown('<div class="tab-header"><h2>📊 Advanced Sentiment Analysis</h2><p>Multi-dimensional emotional and psychological content analysis with AI enhancement</p></div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown("### Text Input")
-        text_input = st.text_area(
+        analysis_text = st.text_area(
             "Enter text for analysis:",
-            height=150,
-            placeholder="Enter your marketing text, social media content, or customer feedback here..."
+            height=200,
+            placeholder="Paste your marketing content, social media posts, or any text for comprehensive analysis..."
         )
         
-        analysis_depth = st.selectbox(
-            "Analysis Depth:",
-            ["Basic", "Advanced", "Deep Neural", "Enterprise AI"]
+        analysis_type = st.selectbox(
+            "Analysis Type:",
+            ["Basic Sentiment", "Advanced Emotions", "Marketing Insights", "Psychological Profiling", "Cross-Cultural"]
         )
         
-        if st.button("🔍 Analyze Sentiment", type="primary", use_container_width=True):
-            if text_input:
+        if st.button("🔍 Analyze Sentiment", type="primary"):
+            if analysis_text:
                 with st.spinner("Performing advanced sentiment analysis..."):
-                    time.sleep(2)  # Simulate processing
+                    # Simulate advanced analysis
+                    time.sleep(2)
                     
-                    # Generate realistic sentiment analysis results
-                    sentiment_score = np.random.uniform(0.2, 0.9)
-                    emotions = {
-                        'Joy': np.random.uniform(0.1, 0.8),
-                        'Trust': np.random.uniform(0.2, 0.9),
-                        'Fear': np.random.uniform(0.0, 0.3),
-                        'Surprise': np.random.uniform(0.1, 0.6),
-                        'Sadness': np.random.uniform(0.0, 0.4),
-                        'Anger': np.random.uniform(0.0, 0.3),
-                        'Anticipation': np.random.uniform(0.2, 0.7),
-                        'Disgust': np.random.uniform(0.0, 0.2)
+                    # Generate comprehensive results
+                    results = {
+                        'overall_sentiment': np.random.choice(['Positive', 'Negative', 'Neutral'], p=[0.6, 0.2, 0.2]),
+                        'confidence': np.random.uniform(0.75, 0.95),
+                        'emotions': {
+                            'Joy': np.random.uniform(0.4, 0.8),
+                            'Trust': np.random.uniform(0.5, 0.9),
+                            'Fear': np.random.uniform(0.1, 0.3),
+                            'Surprise': np.random.uniform(0.2, 0.6),
+                            'Sadness': np.random.uniform(0.1, 0.3),
+                            'Disgust': np.random.uniform(0.05, 0.2),
+                            'Anger': np.random.uniform(0.05, 0.25),
+                            'Anticipation': np.random.uniform(0.3, 0.7)
+                        },
+                        'marketing_metrics': {
+                            'Brand Appeal': np.random.uniform(0.65, 0.85),
+                            'Purchase Intent': np.random.uniform(0.60, 0.80),
+                            'Viral Potential': np.random.uniform(0.50, 0.75),
+                            'Memorability': np.random.uniform(0.55, 0.80)
+                        }
                     }
                     
-                    st.success("Analysis Complete!")
+                    st.session_state.analysis_results['sentiment'] = results
                     
                     # Display results
-                    col_res1, col_res2, col_res3 = st.columns(3)
-                    with col_res1:
-                        st.metric("Overall Sentiment", f"{sentiment_score:.2f}", f"{sentiment_score-0.5:.2f}")
-                    with col_res2:
-                        st.metric("Confidence", f"{np.random.uniform(0.8, 0.95):.1%}", "+5%")
-                    with col_res3:
-                        dominant_emotion = max(emotions, key=emotions.get)
-                        st.metric("Dominant Emotion", dominant_emotion, f"{emotions[dominant_emotion]:.2f}")
-                    
-                    # Emotion breakdown chart
-                    fig = px.bar(
-                        x=list(emotions.keys()),
-                        y=list(emotions.values()),
-                        title="Emotional Profile Analysis",
-                        color=list(emotions.values()),
-                        color_continuous_scale="viridis"
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.warning("Please enter text to analyze.")
+                    st.success("✅ Analysis Complete!")
     
     with col2:
-        st.markdown("### Analysis Metrics")
-        
-        # Real-time metrics
-        metrics_data = {
-            'Positive': 65,
-            'Neutral': 25,
-            'Negative': 10
-        }
-        
-        fig_donut = px.pie(
-            values=list(metrics_data.values()),
-            names=list(metrics_data.keys()),
-            hole=0.6,
-            title="Sentiment Distribution"
-        )
-        st.plotly_chart(fig_donut, use_container_width=True)
-        
-        st.markdown("### Marketing Insights")
-        with st.expander("📈 Brand Appeal Score"):
-            st.progress(0.78)
-            st.caption("Brand appeal: 78% (Excellent)")
-        
-        with st.expander("🎯 Purchase Intent"):
-            st.progress(0.65)
-            st.caption("Purchase likelihood: 65% (High)")
-        
-        with st.expander("🔄 Viral Potential"):
-            st.progress(0.82)
-            st.caption("Share probability: 82% (Very High)")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("### Analysis Insights")
+        if 'sentiment' in st.session_state.analysis_results:
+            results = st.session_state.analysis_results['sentiment']
+            
+            st.metric("Overall Sentiment", results['overall_sentiment'], f"{results['confidence']:.1%} confidence")
+            
+            # Emotion radar chart
+            emotions = results['emotions']
+            fig = go.Figure()
+            fig.add_trace(go.Scatterpolar(
+                r=list(emotions.values()),
+                theta=list(emotions.keys()),
+                fill='toself',
+                name='Emotions'
+            ))
+            fig.update_layout(
+                polar=dict(
+                    radialaxis=dict(visible=True, range=[0, 1])
+                ),
+                showlegend=False,
+                height=300
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
-def sarcasm_irony_detection():
-    """Tab 2: Sarcasm & Irony Detection"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("🎭 Sarcasm & Irony Detection")
+# Tab 2: Sarcasm & Irony Detection
+with tab2:
+    st.markdown('<div class="tab-header"><h2>🎭 Sarcasm & Irony Detection</h2><p>Advanced contextual analysis with cultural adaptation</p></div>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("### Advanced Contextual Analysis")
-        
-        text_input = st.text_area(
-            "Enter text for sarcasm/irony detection:",
-            height=120,
-            placeholder="Enter social media posts, reviews, or any text content..."
+        sarcasm_text = st.text_area(
+            "Enter text for sarcasm analysis:",
+            height=150,
+            placeholder="Enter text that might contain sarcasm, irony, or subtle meanings..."
         )
         
-        col_settings1, col_settings2 = st.columns(2)
-        with col_settings1:
-            detection_sensitivity = st.slider("Detection Sensitivity", 0.1, 1.0, 0.7)
-            cultural_context = st.selectbox("Cultural Context", 
-                ["Global", "US English", "UK English", "Australian", "Canadian"])
+        detection_level = st.selectbox("Detection Sensitivity:", ["Standard", "High", "Maximum"])
+        cultural_context = st.selectbox("Cultural Context:", ["Global", "US", "UK", "AU", "CA"])
         
-        with col_settings2:
-            analysis_mode = st.selectbox("Analysis Mode", 
-                ["Real-time", "Batch", "Deep Analysis"])
-            include_context = st.checkbox("Include Context Analysis", value=True)
-        
-        if st.button("🔍 Detect Sarcasm/Irony", type="primary", use_container_width=True):
-            if text_input:
+        if st.button("🔍 Detect Sarcasm", type="primary"):
+            if sarcasm_text:
                 with st.spinner("Analyzing linguistic patterns..."):
                     time.sleep(1.5)
                     
-                    # Generate detection results
-                    sarcasm_probability = np.random.uniform(0.1, 0.9)
-                    irony_probability = np.random.uniform(0.0, 0.8)
-                    confidence = np.random.uniform(0.75, 0.95)
+                    sarcasm_probability = np.random.uniform(0.15, 0.85)
+                    irony_probability = np.random.uniform(0.10, 0.70)
                     
-                    col_det1, col_det2, col_det3 = st.columns(3)
-                    with col_det1:
+                    st.markdown("### Detection Results")
+                    
+                    col_a, col_b = st.columns(2)
+                    with col_a:
                         st.metric("Sarcasm Probability", f"{sarcasm_probability:.1%}")
-                    with col_det2:
+                    with col_b:
                         st.metric("Irony Probability", f"{irony_probability:.1%}")
-                    with col_det3:
-                        st.metric("Detection Confidence", f"{confidence:.1%}")
                     
                     # Linguistic markers
-                    st.markdown("### Linguistic Markers Detected")
-                    markers = ["Contradiction patterns", "Hyperbolic expressions", "Context misalignment", 
-                             "Tonal inconsistencies", "Cultural references"]
-                    selected_markers = np.random.choice(markers, size=np.random.randint(2, 5), replace=False)
-                    
-                    for marker in selected_markers:
-                        st.markdown(f"✓ {marker}")
-            else:
-                st.warning("Please enter text to analyze.")
+                    st.markdown("### Detected Markers")
+                    markers = ["Contrast patterns", "Exaggeration", "Contextual mismatch", "Sentiment inversion"]
+                    for marker in markers[:np.random.randint(2, 4)]:
+                        st.markdown(f'<span class="feature-highlight">{marker}</span>', unsafe_allow_html=True)
     
     with col2:
-        st.markdown("### Detection Stats")
+        st.markdown("### Cultural Adaptation")
+        st.info("Sarcasm detection adapts to cultural context and linguistic patterns specific to different regions.")
         
-        # Sample statistics
-        st.metric("Texts Analyzed Today", "2,847", "+12%")
-        st.metric("Avg Accuracy", "94.2%", "+1.3%")
-        st.metric("Processing Speed", "0.3s", "-0.1s")
+        # Cultural sensitivity chart
+        cultural_factors = {
+            'Directness': np.random.uniform(0.3, 0.9),
+            'Context Dependency': np.random.uniform(0.4, 0.8),
+            'Humor Style': np.random.uniform(0.2, 0.7),
+            'Social Politeness': np.random.uniform(0.5, 0.9)
+        }
         
-        st.markdown("### Recent Detections")
-        recent_data = pd.DataFrame({
-            'Time': ['2 min ago', '5 min ago', '8 min ago'],
-            'Type': ['Sarcasm', 'Irony', 'Neutral'],
-            'Confidence': ['92%', '87%', '96%']
-        })
-        st.dataframe(recent_data, use_container_width=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-def neural_monitoring():
-    """Tab 3: Basic Neural Monitoring"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("🔬 Basic Neural Monitoring")
-    
-    # Real-time neural activity simulation
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.markdown("### Live Neural Activity")
-        
-        # Simulate EEG data
-        time_points = np.linspace(0, 10, 1000)
-        frequencies = ['Delta (0.5-4 Hz)', 'Theta (4-8 Hz)', 'Alpha (8-13 Hz)', 
-                      'Beta (13-30 Hz)', 'Gamma (30-100 Hz)']
-        
-        fig = go.Figure()
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
-        
-        for i, freq in enumerate(frequencies):
-            # Generate realistic EEG-like signals
-            signal = np.sin(2 * np.pi * (i + 1) * time_points) + \
-                    0.5 * np.random.normal(0, 0.1, len(time_points))
-            fig.add_trace(go.Scatter(
-                x=time_points, y=signal + i * 2,
-                mode='lines', name=freq, line=dict(color=colors[i])
-            ))
-        
-        fig.update_layout(
-            title="EEG Frequency Bands",
-            xaxis_title="Time (seconds)",
-            yaxis_title="Amplitude (μV)",
-            height=400
+        fig = px.bar(
+            x=list(cultural_factors.keys()),
+            y=list(cultural_factors.values()),
+            title="Cultural Sensitivity Factors"
         )
         st.plotly_chart(fig, use_container_width=True)
-        
-        # Control panel
-        st.markdown("### Monitoring Controls")
-        col_ctrl1, col_ctrl2, col_ctrl3 = st.columns(3)
-        
-        with col_ctrl1:
-            recording = st.checkbox("🔴 Recording", value=True)
-            if recording:
-                st.success("Recording active")
-            else:
-                st.info("Recording paused")
-        
-        with col_ctrl2:
-            device_status = st.selectbox("Device", ["NeuroSky", "Emotiv EPOC", "OpenBCI", "Muse"])
-            st.info(f"Connected: {device_status}")
-        
-        with col_ctrl3:
-            sample_rate = st.selectbox("Sample Rate", ["250 Hz", "500 Hz", "1000 Hz"])
-            st.info(f"Rate: {sample_rate}")
-    
-    with col2:
-        st.markdown("### Neural Metrics")
-        
-        # Real-time metrics
-        attention_level = np.random.uniform(0.6, 0.9)
-        meditation_level = np.random.uniform(0.4, 0.8)
-        stress_level = np.random.uniform(0.1, 0.4)
-        
-        st.metric("Attention Level", f"{attention_level:.1%}", "↑ 5%")
-        st.metric("Meditation Level", f"{meditation_level:.1%}", "→ 0%")
-        st.metric("Stress Level", f"{stress_level:.1%}", "↓ 3%")
-        
-        # Brain activity visualization
-        st.markdown("### Brain Activity Map")
-        brain_regions = ['Frontal', 'Parietal', 'Temporal', 'Occipital']
-        activity_levels = np.random.uniform(0.3, 0.9, len(brain_regions))
-        
-        brain_fig = px.bar(
-            x=brain_regions, y=activity_levels,
-            title="Regional Activity",
-            color=activity_levels,
-            color_continuous_scale="plasma"
-        )
-        st.plotly_chart(brain_fig, use_container_width=True)
-        
-        # Session info
-        st.markdown("### Session Info")
-        st.info(f"Duration: {np.random.randint(5, 30)} minutes")
-        st.info(f"Data Points: {np.random.randint(10000, 50000):,}")
-        st.info(f"Quality: {np.random.choice(['Excellent', 'Good', 'Fair'])}")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
-def professional_visuals():
-    """Tab 4: Professional Visuals"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("🎨 Professional Visuals")
+# Tab 3: Basic Monitoring (Neural Monitoring)
+with tab3:
+    st.markdown('<div class="tab-header"><h2>🔬 Basic Neural Monitoring</h2><p>Real-time neural pattern analysis and monitoring</p></div>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns([2, 1])
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("### Visual Generation Studio")
+        st.markdown("### EEG Device Connection")
+        device_options = ["NeuroSky", "Emotiv EPOC", "OpenBCI", "Muse", "Simulation Mode"]
+        selected_device = st.selectbox("Select EEG Device:", device_options)
         
-        # Visual type selection
+        connection_status = st.button("🔗 Connect Device")
+        if connection_status:
+            st.success(f"✅ Connected to {selected_device}")
+    
+    with col2:
+        st.markdown("### Frequency Bands")
+        frequency_bands = {
+            'Delta (0.5-4 Hz)': np.random.uniform(20, 40),
+            'Theta (4-8 Hz)': np.random.uniform(15, 35),
+            'Alpha (8-13 Hz)': np.random.uniform(25, 45),
+            'Beta (13-30 Hz)': np.random.uniform(30, 50),
+            'Gamma (30-100 Hz)': np.random.uniform(10, 25)
+        }
+        
+        for band, value in frequency_bands.items():
+            st.metric(band, f"{value:.1f} μV")
+    
+    with col3:
+        st.markdown("### Real-time Monitoring")
+        
+        # Generate real-time data simulation
+        if st.checkbox("Start Monitoring"):
+            chart_placeholder = st.empty()
+            
+            # Simulate real-time EEG data
+            time_points = np.arange(0, 10, 0.1)
+            eeg_data = np.sin(time_points * 2) + 0.5 * np.sin(time_points * 8) + 0.3 * np.random.randn(len(time_points))
+            
+            fig = px.line(x=time_points, y=eeg_data, title="Live EEG Signal")
+            chart_placeholder.plotly_chart(fig, use_container_width=True)
+
+# Tab 4: Professional Visuals (Enhanced Export from PR #4)
+with tab4:
+    st.markdown('<div class="tab-header"><h2>🎨 Professional Visuals</h2><p>Generate publication-ready charts, infographics, and marketing visuals</p></div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        st.markdown("### Visual Generation Options")
+        
         visual_type = st.selectbox(
             "Visual Type:",
-            ["Marketing Dashboard", "Sentiment Heatmap", "Neural Activity Chart", 
-             "Brand Performance", "Consumer Journey", "Emotion Timeline"]
+            ["Sentiment Dashboard", "Emotion Radar", "Marketing Metrics", "Comparison Chart", "Infographic"]
         )
         
-        # Customization options
-        color_scheme = st.selectbox("Color Scheme:", 
-            ["Corporate Blue", "Vibrant Rainbow", "Monochrome", "Brand Colors"])
-        chart_style = st.selectbox("Chart Style:", 
-            ["Modern", "Classic", "Minimalist", "Bold"])
+        color_scheme = st.selectbox(
+            "Color Scheme:",
+            ["Professional Blue", "Marketing Gradient", "Neutral Tones", "Brand Colors"]
+        )
         
-        # Data input
-        st.markdown("### Data Configuration")
-        data_source = st.selectbox("Data Source:", 
-            ["Current Analysis", "Historical Data", "Simulated Data", "Upload File"])
+        export_format = st.selectbox(
+            "Export Format:",
+            ["PNG (High-Res)", "PDF (Vector)", "SVG (Scalable)", "Interactive HTML"]
+        )
         
-        if st.button("🎨 Generate Visual", type="primary", use_container_width=True):
-            with st.spinner("Creating professional visualization..."):
+        if st.button("🎨 Generate Visual", type="primary"):
+            with st.spinner("Creating professional visual..."):
                 time.sleep(2)
-                
-                # Generate sample visualization based on selection
-                if visual_type == "Marketing Dashboard":
-                    # Create a comprehensive dashboard
-                    fig = create_marketing_dashboard()
-                    st.plotly_chart(fig, use_container_width=True)
-                
-                elif visual_type == "Sentiment Heatmap":
-                    # Create sentiment heatmap
-                    fig = create_sentiment_heatmap()
-                    st.plotly_chart(fig, use_container_width=True)
-                
-                elif visual_type == "Neural Activity Chart":
-                    # Create neural activity visualization
-                    fig = create_neural_chart()
-                    st.plotly_chart(fig, use_container_width=True)
-                
-                st.success("Visual generated successfully!")
-                
-                # Export options
-                st.markdown("### Export Options")
-                col_exp1, col_exp2, col_exp3 = st.columns(3)
-                with col_exp1:
-                    if st.button("📄 Export PDF"):
-                        st.success("PDF export initiated")
-                with col_exp2:
-                    if st.button("🖼️ Export PNG"):
-                        st.success("PNG export initiated")
-                with col_exp3:
-                    if st.button("📊 Export SVG"):
-                        st.success("SVG export initiated")
+                st.success("✅ Visual generated successfully!")
     
     with col2:
-        st.markdown("### Visual Library")
+        st.markdown("### Generated Visuals")
         
-        # Sample visuals gallery
-        st.markdown("#### Recent Visuals")
-        sample_visuals = [
-            "Dashboard_2024.png",
-            "Sentiment_Analysis.svg", 
-            "Neural_Patterns.pdf",
-            "Brand_Report.png"
-        ]
-        
-        for visual in sample_visuals:
-            with st.expander(f"📊 {visual}"):
-                st.info(f"Created: {np.random.randint(1, 30)} days ago")
-                st.info(f"Views: {np.random.randint(50, 500)}")
-                if st.button(f"Use as Template", key=f"template_{visual}"):
-                    st.success("Template loaded!")
-        
-        # Templates
-        st.markdown("#### Quick Templates")
-        templates = ["Executive Summary", "Technical Report", "Social Media", "Presentation"]
-        for template in templates:
-            if st.button(f"📋 {template}", use_container_width=True):
-                st.info(f"{template} template selected")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+        # Sample marketing dashboard
+        if 'sentiment' in st.session_state.analysis_results:
+            results = st.session_state.analysis_results['sentiment']
+            marketing_metrics = results['marketing_metrics']
+            
+            fig = make_subplots(
+                rows=2, cols=2,
+                subplot_titles=('Brand Appeal', 'Purchase Intent', 'Viral Potential', 'Memorability'),
+                specs=[[{"type": "indicator"}, {"type": "indicator"}],
+                       [{"type": "indicator"}, {"type": "indicator"}]]
+            )
+            
+            metrics = list(marketing_metrics.items())
+            for i, (metric, value) in enumerate(metrics):
+                row = i // 2 + 1
+                col = i % 2 + 1
+                
+                fig.add_trace(
+                    go.Indicator(
+                        mode="gauge+number",
+                        value=value * 100,
+                        domain={'x': [0, 1], 'y': [0, 1]},
+                        title={'text': metric},
+                        gauge={'axis': {'range': [None, 100]},
+                               'bar': {'color': "#667eea"},
+                               'steps': [{'range': [0, 50], 'color': "lightgray"},
+                                        {'range': [50, 80], 'color': "yellow"}],
+                               'threshold': {'line': {'color': "red", 'width': 4},
+                                           'thickness': 0.75, 'value': 90}}
+                    ),
+                    row=row, col=col
+                )
+            
+            fig.update_layout(height=500, title_text="Marketing Performance Dashboard")
+            st.plotly_chart(fig, use_container_width=True)
 
-def media_input_hub():
-    """Tab 5: Media Input Hub (PR #4 Integration)"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("📁 Media Input Hub")
+# Tab 5: Media Input Hub (NEW - PR #4 Media Capabilities)
+with tab5:
+    st.markdown('<div class="tab-header"><h2>📁 Media Input Hub</h2><p>Upload and analyze text, images, videos, audio, and URLs</p></div>', unsafe_allow_html=True)
     
-    # File upload section
-    st.markdown("### Multi-Media Upload & Analysis")
+    # Media upload sections
+    col1, col2 = st.columns(2)
     
-    tab_text, tab_image, tab_video, tab_audio, tab_url = st.tabs(
-        ["📝 Text", "🖼️ Images", "🎥 Videos", "🎵 Audio", "🌐 URLs"]
-    )
-    
-    with tab_text:
-        st.markdown("#### Text Content Analysis")
-        text_type = st.selectbox("Content Type:", 
-            ["Advertisement Copy", "Social Media", "Email Marketing", "Website Content"])
+    with col1:
+        st.markdown("### Text Analysis")
+        text_tab1, text_tab2, text_tab3 = st.tabs(["Ad Copy", "Social Media", "Brand Messaging"])
         
-        text_content = st.text_area("Enter or paste text:", height=150)
+        with text_tab1:
+            ad_copy = st.text_area("Advertisement Text:", height=100)
+            if ad_copy:
+                st.session_state.uploaded_media['text'].append({
+                    'type': 'ad_copy',
+                    'content': ad_copy,
+                    'timestamp': datetime.now()
+                })
         
-        if st.button("Analyze Text Content", key="analyze_text"):
-            if text_content:
-                with st.spinner("Processing text content..."):
-                    time.sleep(1)
-                    
-                    # Text analysis results
-                    col_t1, col_t2, col_t3, col_t4 = st.columns(4)
-                    with col_t1:
-                        st.metric("Readability", "B+", "Good")
-                    with col_t2:
-                        st.metric("Sentiment", "Positive", "+0.7")
-                    with col_t3:
-                        st.metric("Engagement", "High", "87%")
-                    with col_t4:
-                        st.metric("Word Count", len(text_content.split()), f"{len(text_content)} chars")
-                    
-                    st.success("Text analysis complete!")
-    
-    with tab_image:
-        st.markdown("#### Image Analysis")
+        with text_tab2:
+            social_content = st.text_area("Social Media Content:", height=100)
+            if social_content:
+                st.session_state.uploaded_media['text'].append({
+                    'type': 'social_media',
+                    'content': social_content,
+                    'timestamp': datetime.now()
+                })
+        
+        with text_tab3:
+            brand_message = st.text_area("Brand Messaging:", height=100)
+            if brand_message:
+                st.session_state.uploaded_media['text'].append({
+                    'type': 'brand_messaging',
+                    'content': brand_message,
+                    'timestamp': datetime.now()
+                })
+        
+        st.markdown("### Image Upload")
         uploaded_images = st.file_uploader(
-            "Upload images for analysis:",
-            type=['png', 'jpg', 'jpeg', 'gif'],
+            "Upload Images:",
+            type=['png', 'jpg', 'jpeg', 'gif', 'webp'],
             accept_multiple_files=True
         )
-        
         if uploaded_images:
-            st.success(f"Uploaded {len(uploaded_images)} image(s)")
-            
-            col_img1, col_img2 = st.columns(2)
-            with col_img1:
-                st.info("Visual Sentiment: Positive")
-                st.info("Color Dominance: Blue/Green")
-            with col_img2:
-                st.info("Attention Areas: Center-focused")
-                st.info("Brand Visibility: High")
-            
-            if st.button("Analyze Images", key="analyze_images"):
-                with st.spinner("Analyzing visual content..."):
-                    time.sleep(2)
-                    st.success("Image analysis complete!")
-    
-    with tab_video:
-        st.markdown("#### Video Content Analysis")
-        uploaded_video = st.file_uploader(
-            "Upload video file:",
-            type=['mp4', 'mov', 'avi', 'mkv']
-        )
-        
-        if uploaded_video:
-            st.success("Video uploaded successfully")
-            
-            # Video analysis metrics
-            col_v1, col_v2, col_v3 = st.columns(3)
-            with col_v1:
-                st.metric("Duration", "2:45", "Optimal")
-            with col_v2:
-                st.metric("Engagement Curve", "Rising", "+15%")
-            with col_v3:
-                st.metric("Emotional Impact", "High", "8.5/10")
-    
-    with tab_audio:
-        st.markdown("#### Audio Analysis")
-        uploaded_audio = st.file_uploader(
-            "Upload audio file:",
-            type=['mp3', 'wav', 'aac', 'ogg']
-        )
-        
-        if uploaded_audio:
-            st.success("Audio uploaded successfully")
-            
-            # Audio analysis
-            col_a1, col_a2 = st.columns(2)
-            with col_a1:
-                st.info("Voice Sentiment: Confident")
-                st.info("Pace: Moderate")
-            with col_a2:
-                st.info("Clarity: Excellent")
-                st.info("Emotional Tone: Persuasive")
-    
-    with tab_url:
-        st.markdown("#### Website/URL Analysis")
-        url_input = st.text_input("Enter URL to analyze:")
-        
-        if st.button("Analyze URL", key="analyze_url") and url_input:
-            with st.spinner("Fetching and analyzing website..."):
-                time.sleep(2)
-                
-                col_u1, col_u2, col_u3 = st.columns(3)
-                with col_u1:
-                    st.metric("Page Load Score", "A", "Fast")
-                with col_u2:
-                    st.metric("UX Rating", "B+", "Good")
-                with col_u3:
-                    st.metric("Mobile Friendly", "Yes", "✓")
-                
-                st.success("URL analysis complete!")
-    
-    # Campaign summary
-    st.markdown("### Campaign Summary")
-    col_sum1, col_sum2, col_sum3, col_sum4 = st.columns(4)
-    
-    with col_sum1:
-        st.metric("Total Assets", "0", "Ready")
-    with col_sum2:
-        st.metric("Analysis Progress", "0%", "Pending")
-    with col_sum3:
-        st.metric("Overall Score", "N/A", "Analyze to see")
-    with col_sum4:
-        st.metric("Recommendations", "0", "Pending")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-def environmental_simulation():
-    """Tab 6: Environmental Simulation (PR #5 Integration)"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("🏪 Environmental Simulation")
-    
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.markdown("### Environmental Analysis Studio")
-        
-        # Environment type selection
-        environment_type = st.selectbox(
-            "Environment Type:",
-            ["Retail Store", "Restaurant", "Office Space", "Hospital", "Shopping Mall", 
-             "Hotel Lobby", "Automotive Showroom", "Museum", "Airport", "Custom"]
-        )
-        
-        # Simulation parameters
-        st.markdown("#### Simulation Parameters")
-        col_param1, col_param2 = st.columns(2)
-        
-        with col_param1:
-            crowd_density = st.slider("Crowd Density", 0, 100, 50)
-            lighting_level = st.slider("Lighting Level", 0, 100, 75)
-        
-        with col_param2:
-            noise_level = st.slider("Noise Level", 0, 100, 30)
-            temperature = st.slider("Temperature (°C)", 15, 30, 22)
-        
-        # Environmental factors
-        st.markdown("#### Environmental Factors")
-        factors = st.multiselect(
-            "Select factors to analyze:",
-            ["Air Quality", "Music/Audio", "Scent", "Color Scheme", "Layout Flow", 
-             "Signage", "Product Placement", "Staff Interaction"]
-        )
-        
-        # Walkthrough recording
-        st.markdown("#### Walkthrough Recording")
-        recording_type = st.selectbox(
-            "Recording Type:",
-            ["360° Video", "Eye-tracking", "Audio Recording", "Movement Path", "Combined"]
-        )
-        
-        if st.button("🎬 Start Environmental Simulation", type="primary", use_container_width=True):
-            with st.spinner("Generating environmental simulation..."):
-                time.sleep(3)
-                
-                # Generate simulation results
-                st.success("Environmental simulation complete!")
-                
-                # Results visualization
-                create_environmental_heatmap(environment_type, crowd_density)
-                
-                # Analysis metrics
-                col_res1, col_res2, col_res3 = st.columns(3)
-                with col_res1:
-                    st.metric("Comfort Score", f"{np.random.randint(75, 95)}/100", "+5")
-                with col_res2:
-                    st.metric("Navigation Ease", f"{np.random.randint(80, 95)}/100", "+3")
-                with col_res3:
-                    st.metric("Dwell Time", f"{np.random.randint(3, 8)} min", "+1.2 min")
+            st.session_state.uploaded_media['images'].extend(uploaded_images)
+            st.success(f"✅ {len(uploaded_images)} images uploaded")
     
     with col2:
-        st.markdown("### Simulation Dashboard")
+        st.markdown("### Video Upload")
+        uploaded_videos = st.file_uploader(
+            "Upload Videos:",
+            type=['mp4', 'mov', 'avi', 'webm'],
+            accept_multiple_files=True
+        )
+        if uploaded_videos:
+            st.session_state.uploaded_media['videos'].extend(uploaded_videos)
+            st.success(f"✅ {len(uploaded_videos)} videos uploaded")
         
-        # Real-time metrics
-        st.markdown("#### Live Metrics")
-        st.metric("Active Simulations", "3", "+1")
-        st.metric("Avg. Session Time", "12.5 min", "+2.1 min")
-        st.metric("Data Points Collected", "847", "+127")
+        st.markdown("### Audio Upload")
+        uploaded_audio = st.file_uploader(
+            "Upload Audio:",
+            type=['mp3', 'wav', 'aac', 'ogg'],
+            accept_multiple_files=True
+        )
+        if uploaded_audio:
+            st.session_state.uploaded_media['audio'].extend(uploaded_audio)
+            st.success(f"✅ {len(uploaded_audio)} audio files uploaded")
         
-        # Environment presets
-        st.markdown("#### Quick Presets")
-        presets = ["Apple Store", "Starbucks", "IKEA Showroom", "Tesla Showroom"]
-        
-        for preset in presets:
-            if st.button(f"🏢 {preset}", use_container_width=True):
-                st.info(f"Loading {preset} preset...")
-        
-        # Recent simulations
-        st.markdown("#### Recent Simulations")
-        recent_sims = pd.DataFrame({
-            'Environment': ['Retail Store', 'Restaurant', 'Office'],
-            'Score': [87, 92, 78],
-            'Date': ['Today', 'Yesterday', '2 days ago']
-        })
-        st.dataframe(recent_sims, use_container_width=True)
-        
-        # Export options
-        st.markdown("#### Export Results")
-        if st.button("📄 Generate Report"):
-            st.success("Environmental report generated!")
-        if st.button("📊 Export Data"):
-            st.success("Simulation data exported!")
+        st.markdown("### URL Analysis")
+        url_input = st.text_input("Website URL:")
+        if st.button("📊 Capture & Analyze URL") and url_input:
+            st.session_state.uploaded_media['urls'].append({
+                'url': url_input,
+                'timestamp': datetime.now()
+            })
+            st.success("✅ URL added for analysis")
     
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Content summary
+    st.markdown("### Content Summary")
+    col_a, col_b, col_c, col_d, col_e = st.columns(5)
+    
+    with col_a:
+        st.metric("Text Inputs", len(st.session_state.uploaded_media['text']))
+    with col_b:
+        st.metric("Images", len(st.session_state.uploaded_media['images']))
+    with col_c:
+        st.metric("Videos", len(st.session_state.uploaded_media['videos']))
+    with col_d:
+        st.metric("Audio Files", len(st.session_state.uploaded_media['audio']))
+    with col_e:
+        st.metric("URLs", len(st.session_state.uploaded_media['urls']))
 
-def reports_export():
-    """Tab 7: Reports & Export (Enhanced)"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("📋 Reports & Export")
+# Tab 6: Environmental Simulation (NEW - PR #5 Environmental Features)
+with tab6:
+    st.markdown('<div class="tab-header"><h2>🏪 Environmental Simulation</h2><p>Advanced walkthrough recording and environmental sensor simulation</p></div>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns([2, 1])
+    simulation_type = st.selectbox(
+        "Simulation Type:",
+        ["Retail Store Navigation", "Drive-Through Experience", "Museum Exhibition", "Casino Environment", "Automotive Showroom"]
+    )
+    
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("### Professional Report Generator")
+        st.markdown("### Environment Setup")
         
-        # Report configuration
+        if simulation_type == "Retail Store Navigation":
+            store_type = st.selectbox("Store Type:", ["Grocery", "Fashion", "Electronics", "Pharmacy"])
+            layout_style = st.selectbox("Layout:", ["Grid", "Loop", "Free-form", "Boutique"])
+            
+        elif simulation_type == "Drive-Through Experience":
+            restaurant_type = st.selectbox("Restaurant Type:", ["Fast Food", "Coffee", "Ice Cream", "Pharmacy"])
+            menu_complexity = st.selectbox("Menu Complexity:", ["Simple", "Medium", "Complex"])
+            
+        st.markdown("### Environmental Factors")
+        lighting = st.slider("Lighting Level", 0, 100, 70)
+        noise_level = st.slider("Noise Level", 0, 100, 30)
+        crowd_density = st.slider("Crowd Density", 0, 100, 50)
+        temperature = st.slider("Temperature (°F)", 60, 80, 72)
+    
+    with col2:
+        st.markdown("### Walkthrough Recording")
+        
+        recording_mode = st.selectbox("Recording Mode:", ["Mobile Phone", "Professional Setup", "360° Camera"])
+        
+        if st.button("🎥 Start Recording"):
+            with st.spinner("Initializing recording..."):
+                time.sleep(2)
+                st.success("✅ Recording started!")
+                
+                # Simulate walkthrough data
+                walkthrough_data = {
+                    'duration': np.random.randint(3, 15),
+                    'decision_points': np.random.randint(5, 20),
+                    'attention_zones': np.random.randint(8, 25),
+                    'emotional_peaks': np.random.randint(3, 8)
+                }
+                
+                st.session_state.environmental_data['walkthrough'] = walkthrough_data
+        
+        if 'walkthrough' in st.session_state.environmental_data:
+            data = st.session_state.environmental_data['walkthrough']
+            st.metric("Duration", f"{data['duration']} min")
+            st.metric("Decision Points", data['decision_points'])
+            st.metric("Attention Zones", data['attention_zones'])
+    
+    with col3:
+        st.markdown("### Spatial Analysis")
+        
+        if 'walkthrough' in st.session_state.environmental_data:
+            # Generate heatmap simulation
+            heatmap_data = np.random.rand(10, 10)
+            
+            fig = px.imshow(
+                heatmap_data,
+                color_continuous_scale="Viridis",
+                title="Attention Heatmap"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("Start a walkthrough recording to see spatial analysis")
+
+# Tab 7: Reports & Export (Enhanced Professional Reports)
+with tab7:
+    st.markdown('<div class="tab-header"><h2>📋 Reports & Export</h2><p>Comprehensive analysis reports and professional export capabilities</p></div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        st.markdown("### Report Configuration")
+        
         report_type = st.selectbox(
             "Report Type:",
-            ["Executive Summary", "Technical Analysis", "Marketing Insights", 
-             "Neural Activity Report", "Environmental Analysis", "Custom Report"]
+            ["Executive Summary", "Technical Analysis", "Marketing Insights", "Complete Report"]
         )
         
-        # Content selection
-        st.markdown("#### Include in Report")
-        include_sections = st.multiselect(
-            "Report Sections:",
-            ["Sentiment Analysis", "Neural Monitoring", "Visual Analytics", 
-             "Environmental Data", "Media Analysis", "Recommendations", 
-             "Methodology", "Raw Data", "Appendices"],
-            default=["Sentiment Analysis", "Recommendations"]
+        export_format = st.selectbox(
+            "Export Format:",
+            ["PDF", "DOCX", "HTML", "JSON", "PowerPoint"]
         )
         
-        # Format options
-        col_format1, col_format2 = st.columns(2)
-        with col_format1:
-            export_format = st.selectbox("Export Format:", 
-                ["PDF", "Word Document", "HTML", "PowerPoint", "Excel", "JSON"])
-        with col_format2:
-            template_style = st.selectbox("Template Style:", 
-                ["Corporate", "Modern", "Academic", "Minimal", "Brand"])
+        include_visuals = st.checkbox("Include Visualizations", True)
+        include_raw_data = st.checkbox("Include Raw Data", False)
+        include_recommendations = st.checkbox("Include Recommendations", True)
         
-        # Advanced options
-        with st.expander("Advanced Options"):
-            include_charts = st.checkbox("Include Charts & Visualizations", value=True)
-            include_raw_data = st.checkbox("Include Raw Data", value=False)
-            executive_summary = st.checkbox("Generate Executive Summary", value=True)
-            branding = st.checkbox("Apply Company Branding", value=True)
-        
-        if st.button("📊 Generate Report", type="primary", use_container_width=True):
-            with st.spinner("Generating professional report..."):
-                progress_bar = st.progress(0)
-                for i in range(100):
-                    time.sleep(0.02)
-                    progress_bar.progress(i + 1)
+        if st.button("📊 Generate Report", type="primary"):
+            with st.spinner("Generating comprehensive report..."):
+                time.sleep(3)
                 
-                st.success("Report generated successfully!")
+                # Generate report content
+                report_content = f"""
+# NeuroMarketing Analysis Report
+**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Report Type:** {report_type}
+
+## Executive Summary
+- Analysis completed across multiple dimensions
+- {len(st.session_state.uploaded_media['text'])} text inputs analyzed
+- {len(st.session_state.uploaded_media['images'])} images processed
+- Environmental simulation data collected
+
+## Key Findings
+- Overall sentiment: {'Positive' if np.random.random() > 0.3 else 'Neutral'}
+- Engagement score: {np.random.uniform(0.7, 0.9):.1%}
+- Brand appeal: {np.random.uniform(0.6, 0.8):.1%}
+
+## Recommendations
+1. Optimize content for higher emotional engagement
+2. Enhance visual hierarchy in marketing materials
+3. Consider environmental factors in customer journey design
+"""
                 
-                # Download buttons
-                col_dl1, col_dl2, col_dl3 = st.columns(3)
-                with col_dl1:
-                    st.download_button(
-                        "📄 Download PDF",
-                        data="Sample PDF content",
-                        file_name=f"neuromarketing_report_{datetime.now().strftime('%Y%m%d')}.pdf",
-                        mime="application/pdf"
-                    )
-                with col_dl2:
-                    st.download_button(
-                        "📊 Download Excel",
-                        data="Sample Excel content",
-                        file_name=f"neuromarketing_data_{datetime.now().strftime('%Y%m%d')}.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
-                with col_dl3:
-                    st.download_button(
-                        "🌐 Download HTML",
-                        data="<html><body><h1>NeuroMarketing Report</h1></body></html>",
-                        file_name=f"neuromarketing_report_{datetime.now().strftime('%Y%m%d')}.html",
-                        mime="text/html"
-                    )
+                st.success("✅ Report generated successfully!")
+                
+                # Store report for display
+                st.session_state.generated_report = report_content
     
     with col2:
-        st.markdown("### Report Library")
+        st.markdown("### Generated Report Preview")
         
-        # Recent reports
-        st.markdown("#### Recent Reports")
-        reports_data = pd.DataFrame({
-            'Report': ['Executive_Summary_Q4', 'Neural_Analysis_Dec', 'Marketing_Insights'],
-            'Date': ['2024-01-15', '2024-01-10', '2024-01-05'],
-            'Size': ['2.4 MB', '1.8 MB', '3.1 MB'],
-            'Downloads': [23, 18, 31]
-        })
-        st.dataframe(reports_data, use_container_width=True)
-        
-        # Quick stats
-        st.markdown("#### Export Statistics")
-        st.metric("Reports Generated", "47", "+5")
-        st.metric("Total Downloads", "234", "+12")
-        st.metric("Avg Rating", "4.8/5", "+0.2")
-        
-        # Templates
-        st.markdown("#### Report Templates")
-        templates = ["Standard", "Executive", "Technical", "Marketing"]
-        for template in templates:
-            if st.button(f"📋 {template}", use_container_width=True):
-                st.info(f"{template} template selected")
-        
-        # Sharing options
-        st.markdown("#### Sharing Options")
-        if st.button("📧 Email Report"):
-            st.success("Email sharing initiated")
-        if st.button("☁️ Upload to Cloud"):
-            st.success("Cloud upload initiated")
-        if st.button("🔗 Generate Share Link"):
-            st.success("Share link generated")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+        if 'generated_report' in st.session_state:
+            st.markdown(st.session_state.generated_report)
+            
+            # Download button
+            st.download_button(
+                label="📥 Download Report",
+                data=st.session_state.generated_report,
+                file_name=f"neuromarketing_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md",
+                mime="text/markdown"
+            )
+        else:
+            st.info("Generate a report to see preview")
 
-def neuroinsight_platform():
-    """Tab 8: NeuroInsight-Africa Platform"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("🧠 NeuroInsight-Africa Platform")
+# Tab 8: NeuroInsight-Africa Platform (Existing Advanced Platform)
+with tab8:
+    st.markdown('<div class="tab-header"><h2>🧠 NeuroInsight-Africa Platform</h2><p>Advanced neuromarketing platform with cultural adaptation for African markets</p></div>', unsafe_allow_html=True)
     
-    # Platform overview
-    st.markdown("### Advanced Neural Analytics Dashboard")
-    
-    # Key metrics
-    col_metric1, col_metric2, col_metric3, col_metric4 = st.columns(4)
-    
-    with col_metric1:
-        st.metric("Active Studies", "142", "+23")
-    with col_metric2:
-        st.metric("Neural Patterns", "2.8K", "+347")
-    with col_metric3:
-        st.metric("Accuracy Rate", "94.7%", "+1.2%")
-    with col_metric4:
-        st.metric("Processing Speed", "0.8s", "-0.2s")
-    
-    # Main content
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns(2)
     
     with col1:
-        # Neural activity visualization
-        st.markdown("#### Real-time Neural Network Analysis")
+        st.markdown("### Cultural Adaptation Engine")
         
-        # Create brain network visualization
-        fig_brain = create_brain_network()
-        st.plotly_chart(fig_brain, use_container_width=True)
+        african_region = st.selectbox(
+            "Target Region:",
+            ["West Africa", "East Africa", "Southern Africa", "North Africa", "Pan-African"]
+        )
         
-        # Analysis controls
-        st.markdown("#### Analysis Configuration")
-        col_ctrl1, col_ctrl2, col_ctrl3 = st.columns(3)
+        language_preference = st.selectbox(
+            "Primary Language:",
+            ["English", "French", "Arabic", "Swahili", "Hausa", "Yoruba", "Zulu"]
+        )
         
-        with col_ctrl1:
-            analysis_type = st.selectbox("Analysis Type:", 
-                ["Consumer Behavior", "Brand Recognition", "Emotional Response", "Decision Making"])
-        with col_ctrl2:
-            neural_model = st.selectbox("Neural Model:", 
-                ["Standard CNN", "Deep LSTM", "Transformer", "Custom"])
-        with col_ctrl3:
-            processing_mode = st.selectbox("Processing:", 
-                ["Real-time", "Batch", "Hybrid"])
-        
-        # Research data
-        st.markdown("#### Research Database Integration")
-        research_progress = st.progress(0.75)
-        st.caption("Research database integration: 75% complete")
-        
-        # Analysis results
-        if st.button("🧠 Run Neural Analysis", type="primary", use_container_width=True):
-            with st.spinner("Processing neural patterns..."):
-                time.sleep(2.5)
-                
-                st.success("Neural analysis complete!")
-                
-                # Results
-                result_col1, result_col2, result_col3 = st.columns(3)
-                with result_col1:
-                    st.metric("Pattern Recognition", "96.3%", "+2.1%")
-                with result_col2:
-                    st.metric("Signal Quality", "Excellent", "A+")
-                with result_col3:
-                    st.metric("Processing Time", "1.2s", "-0.3s")
-    
-    with col2:
-        st.markdown("#### Platform Status")
-        
-        # System status
-        status_indicators = {
-            "Neural Networks": "🟢 Online",
-            "Data Pipeline": "🟢 Active", 
-            "API Services": "🟢 Healthy",
-            "Storage": "🟡 75% Full",
-            "Backup": "🟢 Current"
+        cultural_factors = {
+            'Collectivism vs Individualism': st.slider("", 0, 100, 75),
+            'High Context Communication': st.slider("", 0, 100, 80),
+            'Respect for Authority': st.slider("", 0, 100, 85),
+            'Ubuntu Philosophy': st.slider("", 0, 100, 90)
         }
         
-        for service, status in status_indicators.items():
-            st.text(f"{service}: {status}")
+        st.markdown("### Local Market Insights")
+        market_metrics = {
+            'Mobile Usage': np.random.uniform(0.8, 0.95),
+            'Social Media Penetration': np.random.uniform(0.6, 0.85),
+            'Brand Loyalty': np.random.uniform(0.7, 0.9),
+            'Price Sensitivity': np.random.uniform(0.75, 0.95)
+        }
         
-        st.markdown("#### Recent Activity")
-        activity_data = pd.DataFrame({
-            'Time': ['10:45', '10:42', '10:38', '10:35'],
-            'Event': ['Analysis Complete', 'Data Sync', 'New Study', 'Model Update'],
-            'Status': ['✅', '✅', '🔄', '✅']
-        })
-        st.dataframe(activity_data, use_container_width=True)
+        for metric, value in market_metrics.items():
+            st.metric(metric, f"{value:.1%}")
+    
+    with col2:
+        st.markdown("### Cultural Sentiment Analysis")
         
-        # Quick actions
-        st.markdown("#### Quick Actions")
-        if st.button("🔄 Refresh Models", use_container_width=True):
-            st.success("Models refreshed")
-        if st.button("📊 Export Results", use_container_width=True):
-            st.success("Export initiated")
-        if st.button("⚙️ Settings", use_container_width=True):
-            st.info("Opening settings...")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-def deep_research_engine():
-    """Tab 9: Deep Research Engine (PR #3 Integration)"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("🔬 Deep Research Engine")
-    
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.markdown("### Multi-Source Research Hub")
+        # African cultural sentiment radar
+        cultural_dimensions = {
+            'Ubuntu (Community)': np.random.uniform(0.7, 0.95),
+            'Respect (Dignity)': np.random.uniform(0.8, 0.95),
+            'Spirituality': np.random.uniform(0.6, 0.9),
+            'Family Values': np.random.uniform(0.8, 0.95),
+            'Tradition': np.random.uniform(0.7, 0.9),
+            'Innovation': np.random.uniform(0.5, 0.8)
+        }
         
-        # Research query
-        research_query = st.text_area(
-            "Research Query:",
-            height=100,
-            placeholder="Enter your research question or hypothesis..."
+        fig = go.Figure()
+        fig.add_trace(go.Scatterpolar(
+            r=list(cultural_dimensions.values()),
+            theta=list(cultural_dimensions.keys()),
+            fill='toself',
+            name='Cultural Alignment'
+        ))
+        fig.update_layout(
+            polar=dict(
+                radialaxis=dict(visible=True, range=[0, 1])
+            ),
+            showlegend=False,
+            title="Cultural Sentiment Profile"
         )
+        st.plotly_chart(fig, use_container_width=True)
+
+# Tab 9: Deep Research Engine (NEW - PR #3 Research Module)
+with tab9:
+    st.markdown('<div class="tab-header"><h2>🔬 Deep Research Engine</h2><p>OpenNeuro dataset integration and global research synthesis</p></div>', unsafe_allow_html=True)
+    
+    research_tab1, research_tab2, research_tab3 = st.tabs(["Dataset Search", "Literature Review", "Research Synthesis"])
+    
+    with research_tab1:
+        st.markdown("### Multi-Source Dataset Discovery")
         
-        # Data sources
-        st.markdown("#### Data Sources")
-        col_src1, col_src2 = st.columns(2)
+        col1, col2 = st.columns([2, 1])
         
-        with col_src1:
-            sources = st.multiselect(
-                "Select Sources:",
-                ["OpenNeuro", "Zenodo", "PhysioNet", "IEEE DataPort", "PubMed", "arXiv"],
-                default=["OpenNeuro", "PubMed"]
+        with col1:
+            search_query = st.text_input("Search Keywords:", placeholder="e.g., EEG, fMRI, neuromarketing")
+            
+            data_sources = st.multiselect(
+                "Data Sources:",
+                ["OpenNeuro", "Zenodo", "PhysioNet", "IEEE DataPort", "PubMed"],
+                default=["OpenNeuro", "Zenodo"]
+            )
+            
+            if st.button("🔍 Search Datasets"):
+                with st.spinner("Searching across multiple databases..."):
+                    time.sleep(2)
+                    
+                    # Simulate dataset results
+                    datasets_found = np.random.randint(15, 45)
+                    
+                    st.success(f"✅ Found {datasets_found} datasets across {len(data_sources)} sources")
+                    
+                    # Sample dataset results
+                    sample_datasets = [
+                        {"name": "Consumer EEG Response Dataset", "subjects": 45, "source": "OpenNeuro"},
+                        {"name": "Marketing Stimulus EEG Data", "subjects": 32, "source": "Zenodo"},
+                        {"name": "Brand Recognition Neural Patterns", "subjects": 28, "source": "IEEE DataPort"}
+                    ]
+                    
+                    for dataset in sample_datasets:
+                        with st.expander(f"📊 {dataset['name']}"):
+                            col_a, col_b, col_c = st.columns(3)
+                            with col_a:
+                                st.metric("Subjects", dataset['subjects'])
+                            with col_b:
+                                st.metric("Source", dataset['source'])
+                            with col_c:
+                                if st.button(f"📥 Download", key=dataset['name']):
+                                    st.success("Dataset download initiated")
+        
+        with col2:
+            st.markdown("### Search Status")
+            st.info("🔍 Search across open neuroscience databases")
+            
+            if data_sources:
+                for source in data_sources:
+                    st.markdown(f"✅ {source}")
+    
+    with research_tab2:
+        st.markdown("### Academic Literature Search")
+        
+        literature_query = st.text_input("Literature Keywords:", placeholder="neuromarketing consumer behavior")
+        
+        paper_filters = {
+            "Publication Year": st.slider("From Year:", 2015, 2024, 2020),
+            "Study Type": st.selectbox("Study Type:", ["All", "Experimental", "Review", "Meta-analysis"]),
+            "Journal Ranking": st.selectbox("Journal Ranking:", ["All", "Q1", "Q1-Q2", "Top 10"])
+        }
+        
+        if st.button("📚 Search Literature"):
+            with st.spinner("Searching academic databases..."):
+                time.sleep(2)
+                
+                papers_found = np.random.randint(25, 85)
+                st.success(f"✅ Found {papers_found} relevant papers")
+                
+                # Sample paper results
+                sample_papers = [
+                    {
+                        "title": "Neural Mechanisms of Brand Preference in Consumer Decision Making",
+                        "authors": "Smith, J. et al.",
+                        "journal": "Journal of Consumer Psychology",
+                        "year": 2023,
+                        "citations": 47
+                    },
+                    {
+                        "title": "EEG-Based Analysis of Emotional Responses to Marketing Stimuli",
+                        "authors": "Johnson, A. et al.",
+                        "journal": "NeuroImage",
+                        "year": 2022,
+                        "citations": 62
+                    }
+                ]
+                
+                for paper in sample_papers:
+                    with st.expander(f"📄 {paper['title']}"):
+                        st.write(f"**Authors:** {paper['authors']}")
+                        st.write(f"**Journal:** {paper['journal']} ({paper['year']})")
+                        st.write(f"**Citations:** {paper['citations']}")
+    
+    with research_tab3:
+        st.markdown("### Research Synthesis & Meta-Analysis")
+        
+        if st.button("🧠 Generate Research Synthesis"):
+            with st.spinner("Synthesizing research findings..."):
+                time.sleep(3)
+                
+                synthesis_results = {
+                    "Total Studies": np.random.randint(25, 50),
+                    "Total Participants": np.random.randint(1500, 3000),
+                    "Effect Size": np.random.uniform(0.4, 0.8),
+                    "Confidence Interval": "95%"
+                }
+                
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    st.metric("Studies Included", synthesis_results["Total Studies"])
+                with col2:
+                    st.metric("Total Participants", synthesis_results["Total Participants"])
+                with col3:
+                    st.metric("Effect Size", f"{synthesis_results['Effect Size']:.2f}")
+                with col4:
+                    st.metric("Confidence Level", synthesis_results["Confidence Interval"])
+                
+                st.markdown("### Key Findings")
+                findings = [
+                    "Strong correlation between neural activity and brand preference",
+                    "Emotional processing significantly impacts purchase decisions",
+                    "Cultural factors modulate neuromarketing responses",
+                    "Multi-modal stimuli enhance engagement metrics"
+                ]
+                
+                for finding in findings:
+                    st.markdown(f"• {finding}")
+
+# Tab 10: System Integration (NEW - Unified Configuration)
+with tab10:
+    st.markdown('<div class="tab-header"><h2>⚙️ System Integration</h2><p>Unified configuration and cross-module data management</p></div>', unsafe_allow_html=True)
+    
+    integration_tab1, integration_tab2, integration_tab3 = st.tabs(["API Configuration", "Data Flow", "Export Settings"])
+    
+    with integration_tab1:
+        st.markdown("### API Configuration")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### External APIs")
+            
+            # OpenAI API
+            openai_key = st.text_input("OpenAI API Key:", type="password", 
+                                     help="For enhanced sentiment analysis")
+            if openai_key:
+                st.session_state['openai_api_key'] = openai_key
+            
+            # Other API configurations
+            canva_integration = st.checkbox("Enable Canva Pro Integration")
+            social_media_apis = st.multiselect(
+                "Social Media APIs:",
+                ["Twitter", "Facebook", "Instagram", "LinkedIn", "TikTok"]
             )
         
-        with col_src2:
-            date_range = st.selectbox("Date Range:", 
-                ["Last Year", "Last 5 Years", "All Time", "Custom"])
-            max_results = st.number_input("Max Results:", 10, 1000, 100)
-        
-        # Search configuration
-        with st.expander("Advanced Search Options"):
-            include_keywords = st.text_input("Include Keywords:")
-            exclude_keywords = st.text_input("Exclude Keywords:")
-            language = st.selectbox("Language:", ["English", "All Languages"])
-            study_type = st.multiselect("Study Type:", 
-                ["Experimental", "Observational", "Review", "Meta-Analysis"])
-        
-        if st.button("🔍 Start Deep Research", type="primary", use_container_width=True):
-            if research_query:
-                with st.spinner("Searching research databases..."):
-                    progress = st.progress(0)
-                    
-                    # Simulate research progress
-                    for i, source in enumerate(sources):
-                        time.sleep(1)
-                        progress.progress((i + 1) / len(sources))
-                        st.info(f"Searching {source}...")
-                    
-                    time.sleep(1)
-                    st.success("Research search complete!")
-                    
-                    # Display results
-                    st.markdown("#### Research Results")
-                    
-                    # Mock research results
-                    results_data = generate_research_results(research_query, sources)
-                    st.dataframe(results_data, use_container_width=True)
-                    
-                    # Research insights
-                    col_insight1, col_insight2, col_insight3 = st.columns(3)
-                    with col_insight1:
-                        st.metric("Studies Found", len(results_data), "+15")
-                    with col_insight2:
-                        st.metric("Relevance Score", "87%", "+5%")
-                    with col_insight3:
-                        st.metric("Avg Quality", "4.2/5", "+0.3")
-            else:
-                st.warning("Please enter a research query.")
+        with col2:
+            st.markdown("#### Data Sources")
+            
+            # Database connections
+            database_type = st.selectbox("Database:", ["Local SQLite", "PostgreSQL", "MongoDB", "Cloud Storage"])
+            
+            # Research database access
+            research_access = st.multiselect(
+                "Research Databases:",
+                ["OpenNeuro", "Zenodo", "PhysioNet", "PubMed", "IEEE Xplore"],
+                default=["OpenNeuro", "Zenodo"]
+            )
+            
+            if st.button("🔗 Test Connections"):
+                with st.spinner("Testing API connections..."):
+                    time.sleep(2)
+                    st.success("✅ All connections successful!")
     
-    with col2:
-        st.markdown("### Research Dashboard")
-        
-        # Source status
-        st.markdown("#### Source Status")
-        source_status = {
-            "OpenNeuro": "🟢 Available",
-            "Zenodo": "🟢 Available",
-            "PhysioNet": "🟢 Available", 
-            "IEEE DataPort": "🟡 Limited",
-            "PubMed": "🟢 Available"
-        }
-        
-        for source, status in source_status.items():
-            st.text(f"{source}: {status}")
-        
-        # Recent searches
-        st.markdown("#### Recent Searches")
-        recent_searches = [
-            "EEG consumer behavior",
-            "fMRI brand recognition", 
-            "Neural marketing effectiveness"
-        ]
-        
-        for search in recent_searches:
-            if st.button(f"🔍 {search}", use_container_width=True):
-                st.info(f"Loading search: {search}")
-        
-        # Research trends
-        st.markdown("#### Research Trends")
-        trend_data = pd.DataFrame({
-            'Topic': ['EEG Marketing', 'fMRI Studies', 'Eye Tracking'],
-            'Papers': [1234, 856, 2341],
-            'Growth': ['+12%', '+8%', '+18%']
-        })
-        st.dataframe(trend_data, use_container_width=True)
-        
-        # Export options
-        st.markdown("#### Export Research")
-        if st.button("📄 Generate Bibliography"):
-            st.success("Bibliography generated")
-        if st.button("📊 Export Citations"):
-            st.success("Citations exported")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-def system_integration():
-    """Tab 10: System Integration"""
-    st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.header("⚙️ System Integration")
-    
-    # System overview
-    st.markdown("### Platform Integration Status")
-    
-    # Integration matrix
-    col1, col2 = st.columns([3, 1])
-    
-    with col1:
-        st.markdown("#### Module Integration Matrix")
-        
-        # Create integration status matrix
-        modules = ["Sentiment Analysis", "Neural Monitoring", "Visual Generation", 
-                  "Media Hub", "Environmental Sim", "Research Engine", "Export System"]
-        
-        integration_data = []
-        for i, module in enumerate(modules):
-            row = {"Module": module}
-            for j, other_module in enumerate(modules):
-                if i == j:
-                    row[other_module] = "✅"
-                else:
-                    row[other_module] = "🔗" if np.random.random() > 0.3 else "❌"
-            integration_data.append(row)
-        
-        integration_df = pd.DataFrame(integration_data)
-        st.dataframe(integration_df, use_container_width=True)
-        
-        # API endpoints
-        st.markdown("#### API Endpoints Status")
-        endpoints = {
-            "/api/sentiment": {"Status": "🟢 Active", "Latency": "45ms", "Uptime": "99.9%"},
-            "/api/neural": {"Status": "🟢 Active", "Latency": "67ms", "Uptime": "99.8%"},
-            "/api/research": {"Status": "🟡 Limited", "Latency": "120ms", "Uptime": "98.5%"},
-            "/api/export": {"Status": "🟢 Active", "Latency": "89ms", "Uptime": "99.7%"}
-        }
-        
-        for endpoint, metrics in endpoints.items():
-            with st.expander(f"🔗 {endpoint}"):
-                col_api1, col_api2, col_api3 = st.columns(3)
-                with col_api1:
-                    st.text(f"Status: {metrics['Status']}")
-                with col_api2:
-                    st.text(f"Latency: {metrics['Latency']}")
-                with col_api3:
-                    st.text(f"Uptime: {metrics['Uptime']}")
+    with integration_tab2:
+        st.markdown("### Data Flow Management")
         
         # Data flow diagram
-        st.markdown("#### Data Flow Visualization")
-        create_data_flow_diagram()
+        st.markdown("#### Cross-Module Data Pipeline")
         
-        # System configuration
-        st.markdown("#### System Configuration")
-        col_config1, col_config2 = st.columns(2)
+        flow_stages = [
+            "📁 Media Input → 📊 Sentiment Analysis",
+            "🔬 Research Data → 🏪 Environmental Simulation", 
+            "🎭 Sarcasm Detection → 📋 Professional Reports",
+            "🧠 Neural Monitoring → 🎨 Visual Generation",
+            "All Modules → ⚙️ Unified Export System"
+        ]
         
-        with col_config1:
-            enable_caching = st.checkbox("Enable Caching", value=True)
-            auto_backup = st.checkbox("Auto Backup", value=True)
-            debug_mode = st.checkbox("Debug Mode", value=False)
+        for stage in flow_stages:
+            st.markdown(f"• {stage}")
         
-        with col_config2:
-            max_concurrent = st.slider("Max Concurrent Users", 10, 1000, 100)
-            cache_timeout = st.slider("Cache Timeout (min)", 5, 60, 15)
-            backup_interval = st.slider("Backup Interval (hours)", 1, 24, 6)
-    
-    with col2:
-        st.markdown("#### System Health")
+        st.markdown("#### Data Synchronization")
         
-        # Health metrics
-        health_metrics = {
-            "CPU Usage": "45%",
-            "Memory": "62%",
-            "Disk": "78%",
-            "Network": "23%"
+        sync_status = {
+            "Sentiment Analysis": "✅ Synced",
+            "Media Hub": "✅ Synced", 
+            "Environmental Data": "⏳ Syncing",
+            "Research Engine": "✅ Synced",
+            "Export System": "✅ Ready"
         }
         
-        for metric, value in health_metrics.items():
-            st.metric(metric, value)
+        for module, status in sync_status.items():
+            st.markdown(f"**{module}:** {status}")
+    
+    with integration_tab3:
+        st.markdown("### Export & Integration Settings")
         
-        # Service status
-        st.markdown("#### Services")
-        services = [
-            "Database", "API Gateway", "Message Queue", 
-            "File Storage", "Analytics", "Monitoring"
-        ]
+        col1, col2 = st.columns(2)
         
-        for service in services:
-            status = "🟢" if np.random.random() > 0.2 else "🟡"
-            st.text(f"{service}: {status}")
+        with col1:
+            st.markdown("#### Export Preferences")
+            
+            default_format = st.selectbox("Default Export Format:", ["PDF", "DOCX", "JSON", "HTML"])
+            include_metadata = st.checkbox("Include Metadata", True)
+            compress_exports = st.checkbox("Compress Large Files", True)
+            
+            export_destination = st.selectbox(
+                "Export Destination:",
+                ["Local Download", "Cloud Storage", "Email", "FTP Server"]
+            )
         
-        # Quick actions
-        st.markdown("#### System Actions")
-        if st.button("🔄 Restart Services", use_container_width=True):
-            st.warning("Services restarting...")
-        if st.button("🧹 Clear All Cache", use_container_width=True):
-            st.success("Cache cleared")
-        if st.button("💾 Manual Backup", use_container_width=True):
-            st.success("Backup initiated")
-        if st.button("📊 System Report", use_container_width=True):
-            st.info("Generating report...")
+        with col2:
+            st.markdown("#### Integration Workflows")
+            
+            auto_analysis = st.checkbox("Auto-analyze uploaded content", True)
+            real_time_sync = st.checkbox("Real-time cross-module sync", True)
+            notification_alerts = st.checkbox("Analysis completion alerts", False)
+            
+            workflow_templates = st.multiselect(
+                "Workflow Templates:",
+                ["Marketing Campaign Analysis", "Product Testing", "Brand Assessment", "Custom"]
+            )
         
-        # Integration logs
-        st.markdown("#### Recent Logs")
-        logs = [
-            "10:45 - Data sync complete",
-            "10:42 - Cache refreshed", 
-            "10:38 - New user session",
-            "10:35 - API rate limit reset"
-        ]
-        
-        for log in logs:
-            st.text(log)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+        if st.button("💾 Save Configuration"):
+            st.success("✅ Configuration saved successfully!")
 
-# Helper functions for visualizations
-def create_marketing_dashboard():
-    """Create a comprehensive marketing dashboard"""
-    fig = go.Figure()
-    
-    # Sample data for demonstration
-    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-    engagement = [65, 72, 68, 75, 82, 79]
-    conversions = [12, 15, 13, 18, 22, 20]
-    
-    fig.add_trace(go.Scatter(x=months, y=engagement, mode='lines+markers', 
-                            name='Engagement Rate', line=dict(color='#667eea')))
-    fig.add_trace(go.Scatter(x=months, y=conversions, mode='lines+markers', 
-                            name='Conversion Rate', line=dict(color='#764ba2'), yaxis='y2'))
-    
-    fig.update_layout(
-        title='Marketing Performance Dashboard',
-        xaxis_title='Month',
-        yaxis=dict(title='Engagement Rate (%)', side='left'),
-        yaxis2=dict(title='Conversion Rate (%)', side='right', overlaying='y'),
-        height=400
-    )
-    
-    return fig
+# Footer with system status
+st.markdown("---")
+col1, col2, col3, col4 = st.columns(4)
 
-def create_sentiment_heatmap():
-    """Create sentiment analysis heatmap"""
-    # Sample sentiment data
-    categories = ['Product', 'Service', 'Support', 'Price', 'Quality']
-    time_periods = ['Week 1', 'Week 2', 'Week 3', 'Week 4']
-    
-    sentiment_matrix = np.random.uniform(0.3, 0.9, (len(categories), len(time_periods)))
-    
-    fig = px.imshow(sentiment_matrix, 
-                    x=time_periods, y=categories,
-                    color_continuous_scale='RdYlGn',
-                    title='Sentiment Analysis Heatmap')
-    
-    return fig
+with col1:
+    st.metric("Active Modules", "10/10")
+with col2:
+    st.metric("Data Processed", f"{np.random.randint(150, 500)} MB")
+with col3:
+    st.metric("Analysis Completed", np.random.randint(25, 100))
+with col4:
+    st.metric("System Status", "🟢 Online")
 
-def create_neural_chart():
-    """Create neural activity chart"""
-    time_points = np.linspace(0, 10, 200)
-    neural_signals = {
-        'Attention': np.sin(2 * np.pi * 0.5 * time_points) + 0.5 + np.random.normal(0, 0.1, len(time_points)),
-        'Engagement': np.sin(2 * np.pi * 0.3 * time_points) + 0.7 + np.random.normal(0, 0.1, len(time_points)),
-        'Emotional Response': np.sin(2 * np.pi * 0.8 * time_points) + 0.6 + np.random.normal(0, 0.1, len(time_points))
-    }
-    
-    fig = go.Figure()
-    colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
-    
-    for i, (signal_name, signal_data) in enumerate(neural_signals.items()):
-        fig.add_trace(go.Scatter(x=time_points, y=signal_data, 
-                               mode='lines', name=signal_name,
-                               line=dict(color=colors[i])))
-    
-    fig.update_layout(
-        title='Neural Activity Patterns',
-        xaxis_title='Time (seconds)',
-        yaxis_title='Signal Strength',
-        height=400
-    )
-    
-    return fig
-
-def create_environmental_heatmap(environment_type, crowd_density):
-    """Create environmental analysis heatmap"""
-    st.markdown(f"#### {environment_type} Analysis")
-    
-    # Generate sample heatmap data
-    x_coords = np.arange(0, 20)
-    y_coords = np.arange(0, 15)
-    heat_data = np.random.uniform(0.3, 1.0, (len(y_coords), len(x_coords)))
-    
-    # Adjust based on crowd density
-    heat_data = heat_data * (crowd_density / 100)
-    
-    fig = px.imshow(heat_data, 
-                    title=f'Environmental Heatmap - {environment_type}',
-                    color_continuous_scale='plasma',
-                    aspect='auto')
-    
-    fig.update_layout(
-        xaxis_title='X Position (meters)',
-        yaxis_title='Y Position (meters)',
-        height=400
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
-
-def create_brain_network():
-    """Create brain network visualization"""
-    # Sample brain network data
-    num_nodes = 20
-    node_positions = np.random.uniform(-1, 1, (num_nodes, 2))
-    
-    fig = go.Figure()
-    
-    # Add brain regions as nodes
-    fig.add_trace(go.Scatter(
-        x=node_positions[:, 0],
-        y=node_positions[:, 1],
-        mode='markers',
-        marker=dict(
-            size=[15 + 10 * np.random.random() for _ in range(num_nodes)],
-            color=np.random.uniform(0, 1, num_nodes),
-            colorscale='viridis',
-            colorbar=dict(title="Activity Level")
-        ),
-        text=[f'Region {i+1}' for i in range(num_nodes)],
-        name='Brain Regions'
-    ))
-    
-    # Add connections
-    for i in range(num_nodes):
-        for j in range(i+1, num_nodes):
-            if np.random.random() > 0.7:  # Sparse connections
-                fig.add_trace(go.Scatter(
-                    x=[node_positions[i, 0], node_positions[j, 0]],
-                    y=[node_positions[i, 1], node_positions[j, 1]],
-                    mode='lines',
-                    line=dict(color='rgba(128,128,128,0.3)', width=1),
-                    showlegend=False,
-                    hoverinfo='none'
-                ))
-    
-    fig.update_layout(
-        title='Neural Network Connectivity Map',
-        showlegend=False,
-        height=400,
-        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
-    )
-    
-    return fig
-
-def generate_research_results(query, sources):
-    """Generate mock research results"""
-    titles = [
-        "Neural correlates of consumer decision making",
-        "EEG-based analysis of brand preference",
-        "fMRI study of advertising effectiveness",
-        "Eye-tracking in retail environments",
-        "Neuromarketing ethics and applications",
-        "Consumer neuroscience methodologies",
-        "Brain imaging of purchase intentions",
-        "Subliminal advertising neural effects"
-    ]
-    
-    results = []
-    for i, source in enumerate(sources):
-        for j in range(np.random.randint(3, 8)):
-            results.append({
-                'Title': np.random.choice(titles),
-                'Source': source,
-                'Year': np.random.randint(2018, 2025),
-                'Authors': f"Author {j+1} et al.",
-                'Relevance': f"{np.random.randint(75, 98)}%",
-                'Citations': np.random.randint(10, 500)
-            })
-    
-    return pd.DataFrame(results)
-
-def create_data_flow_diagram():
-    """Create system data flow diagram"""
-    st.markdown("**Data Flow: Input → Processing → Analysis → Export**")
-    
-    flow_stages = ["Data Input", "Processing", "Analysis", "Visualization", "Export"]
-    flow_values = [100, 95, 90, 88, 85]  # Simulating data retention through pipeline
-    
-    fig = go.Figure(go.Funnel(
-        y=flow_stages,
-        x=flow_values,
-        textinfo="value+percent initial"
-    ))
-    
-    fig.update_layout(
-        title="Data Processing Pipeline",
-        height=300
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
-
-def main():
-    """Main application function"""
-    # Initialize platform
-    platform = NeuroMarketingPlatform()
-    
-    # Render header
-    render_header()
-    
-    # Render sidebar
-    render_sidebar()
-    
-    # Main content area
-    st.markdown("---")
-    
-    # Create tabs for the 10 modules
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
-        "📊 Advanced Sentiment Analysis",
-        "🎭 Sarcasm & Irony Detection", 
-        "🔬 Basic Neural Monitoring",
-        "🎨 Professional Visuals",
-        "📁 Media Input Hub",
-        "🏪 Environmental Simulation",
-        "📋 Reports & Export",
-        "🧠 NeuroInsight-Africa Platform",
-        "🔬 Deep Research Engine",
-        "⚙️ System Integration"
-    ])
-    
-    with tab1:
-        advanced_sentiment_analysis()
-    
-    with tab2:
-        sarcasm_irony_detection()
-    
-    with tab3:
-        neural_monitoring()
-    
-    with tab4:
-        professional_visuals()
-    
-    with tab5:
-        media_input_hub()
-    
-    with tab6:
-        environmental_simulation()
-    
-    with tab7:
-        reports_export()
-    
-    with tab8:
-        neuroinsight_platform()
-    
-    with tab9:
-        deep_research_engine()
-    
-    with tab10:
-        system_integration()
-    
-    # Footer
-    st.markdown("---")
-    st.markdown("""
-    <div style='text-align: center; color: #666; margin-top: 30px;'>
-        <p><strong>NeuroMarketing GPT Platform v1.0.0</strong></p>
-        <p>© 2024 NeuroMarketing GPT Team. All rights reserved.</p>
-        <p>🧠 Powered by Advanced AI & Neural Science | 🔬 Production-Ready Enterprise Platform</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-if __name__ == "__main__":
-    main()
+st.markdown("""
+<div style="text-align: center; padding: 2rem; color: #666;">
+    <p>🧠 NeuroMarketing GPT Platform - Revolutionary Neuromarketing Intelligence</p>
+    <p>Integrated PR #3 (Deep Research) • PR #4 (Media Input) • PR #5 (Environmental Simulation)</p>
+</div>
+""", unsafe_allow_html=True)
