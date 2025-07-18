@@ -23,6 +23,7 @@ from advanced_sentiment_module import AdvancedSentimentAnalyzer
 from neuro_deep_research_module import NeuroResearchModule
 from neural_simulation import DigitalBrainTwin
 from export_module import ProfessionalExporter
+from south_african_cultural_analyzer import SouthAfricanCulturalAnalyzer, SAulturalContext, get_sa_cultural_options
 
 # Page configuration
 st.set_page_config(
@@ -98,6 +99,8 @@ if 'brain_twin' not in st.session_state:
     st.session_state.brain_twin = DigitalBrainTwin()
 if 'exporter' not in st.session_state:
     st.session_state.exporter = ProfessionalExporter()
+if 'sa_cultural_analyzer' not in st.session_state:
+    st.session_state.sa_cultural_analyzer = SouthAfricanCulturalAnalyzer()
 
 # Main application header
 st.markdown("""
@@ -190,62 +193,255 @@ with tab1:
             )
             st.plotly_chart(fig, use_container_width=True)
 
-# Tab 2: Sarcasm & Irony Detection
+# Tab 2: Enhanced South African Sarcasm & Irony Detection
 with tab2:
-    st.markdown('<div class="tab-header"><h2>🎭 Sarcasm & Irony Detection</h2><p>Advanced contextual analysis with cultural adaptation</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="tab-header"><h2>🎭 South African Sarcasm & Irony Detection</h2><p>Advanced cultural intelligence with comprehensive SA cultural adaptation</p></div>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    # Get SA cultural options
+    sa_options = get_sa_cultural_options()
+    
+    col1, col2 = st.columns([2, 1])
     
     with col1:
+        st.markdown("### 📝 Text Analysis")
         sarcasm_text = st.text_area(
-            "Enter text for sarcasm analysis:",
+            "Enter text for cultural-aware sarcasm analysis:",
             height=150,
-            placeholder="Enter text that might contain sarcasm, irony, or subtle meanings..."
+            placeholder="Enter text that might contain sarcasm, irony, or cultural references..."
         )
         
         detection_level = st.selectbox("Detection Sensitivity:", ["Standard", "High", "Maximum"])
-        cultural_context = st.selectbox("Cultural Context:", ["Global", "US", "UK", "AU", "CA"])
         
-        if st.button("🔍 Detect Sarcasm", type="primary"):
-            if sarcasm_text:
-                with st.spinner("Analyzing linguistic patterns..."):
-                    time.sleep(1.5)
-                    
-                    sarcasm_probability = np.random.uniform(0.15, 0.85)
-                    irony_probability = np.random.uniform(0.10, 0.70)
-                    
-                    st.markdown("### Detection Results")
-                    
-                    col_a, col_b = st.columns(2)
-                    with col_a:
-                        st.metric("Sarcasm Probability", f"{sarcasm_probability:.1%}")
-                    with col_b:
-                        st.metric("Irony Probability", f"{irony_probability:.1%}")
-                    
-                    # Linguistic markers
-                    st.markdown("### Detected Markers")
-                    markers = ["Contrast patterns", "Exaggeration", "Contextual mismatch", "Sentiment inversion"]
-                    for marker in markers[:np.random.randint(2, 4)]:
-                        st.markdown(f'<span class="feature-highlight">{marker}</span>', unsafe_allow_html=True)
-    
     with col2:
-        st.markdown("### Cultural Adaptation")
-        st.info("Sarcasm detection adapts to cultural context and linguistic patterns specific to different regions.")
+        st.markdown("### 🇿🇦 South African Cultural Context")
         
-        # Cultural sensitivity chart
-        cultural_factors = {
-            'Directness': np.random.uniform(0.3, 0.9),
-            'Context Dependency': np.random.uniform(0.4, 0.8),
-            'Humor Style': np.random.uniform(0.2, 0.7),
-            'Social Politeness': np.random.uniform(0.5, 0.9)
-        }
+        # Enhanced cultural context selection
+        race_group = st.selectbox("Race Group:", sa_options["race_groups"])
+        language_group = st.selectbox("Language Group:", sa_options["languages"])
+        region = st.selectbox("Region/Province:", sa_options["regions"])
+        urban_rural = st.selectbox("Settlement Type:", sa_options["urban_rural"])
         
-        fig = px.bar(
-            x=list(cultural_factors.keys()),
-            y=list(cultural_factors.values()),
-            title="Cultural Sensitivity Factors"
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        # Additional context
+        age_group = st.selectbox("Age Group:", ["youth", "adult", "elder"])
+        education_level = st.selectbox("Education Level:", ["primary", "secondary", "tertiary", "postgraduate"])
+    
+    if st.button("🔍 Analyze with SA Cultural Intelligence", type="primary"):
+        if sarcasm_text:
+            with st.spinner("Analyzing with South African cultural intelligence..."):
+                # Create cultural context
+                sa_context = SAulturalContext(
+                    race_group=race_group,
+                    language_group=language_group,
+                    region=region,
+                    urban_rural=urban_rural,
+                    age_group=age_group,
+                    education_level=education_level
+                )
+                
+                # Perform cultural analysis
+                cultural_result = st.session_state.sa_cultural_analyzer.analyze_cultural_context(
+                    sarcasm_text, sa_context
+                )
+                
+                # Display results in enhanced layout
+                st.markdown("---")
+                st.markdown("## 📊 Cultural Analysis Results")
+                
+                # Core Detection Metrics
+                col_a, col_b, col_c = st.columns(3)
+                with col_a:
+                    st.metric("Sarcasm Probability", f"{cultural_result.sarcasm_probability:.1%}")
+                with col_b:
+                    st.metric("Irony Probability", f"{cultural_result.irony_probability:.1%}")
+                with col_c:
+                    confidence = (cultural_result.sarcasm_probability + cultural_result.irony_probability) / 2
+                    st.metric("Analysis Confidence", f"{confidence:.1%}")
+                
+                # South African Cultural Intelligence Metrics
+                st.markdown("### 🌍 South African Cultural Intelligence")
+                col_d, col_e, col_f, col_g = st.columns(4)
+                
+                with col_d:
+                    st.metric("Ubuntu Compatibility", f"{cultural_result.ubuntu_compatibility:.1%}",
+                             help="Alignment with Ubuntu philosophy and community values")
+                with col_e:
+                    st.metric("Cross-Cultural Sensitivity", f"{cultural_result.cross_cultural_sensitivity:.1%}",
+                             help="Appropriateness across different race groups")
+                with col_f:
+                    st.metric("Regional Appropriateness", f"{cultural_result.regional_appropriateness:.1%}",
+                             help="Suitability for the selected province/region")
+                with col_g:
+                    st.metric("Language Respect Index", f"{cultural_result.language_respect_index:.1%}",
+                             help="Respect for linguistic diversity and authenticity")
+                
+                # Cultural Markers and Insights
+                col_insights, col_risks = st.columns(2)
+                
+                with col_insights:
+                    st.markdown("### 🎯 Cultural Markers Detected")
+                    if cultural_result.cultural_markers:
+                        for marker in cultural_result.cultural_markers:
+                            st.markdown(f'<span class="feature-highlight">{marker}</span>', unsafe_allow_html=True)
+                    else:
+                        st.info("No specific cultural markers detected")
+                
+                with col_risks:
+                    st.markdown("### ⚠️ Risk Assessment")
+                    for risk_type, risk_value in cultural_result.risk_assessment.items():
+                        risk_color = "🔴" if risk_value > 0.7 else "🟡" if risk_value > 0.4 else "🟢"
+                        risk_label = risk_type.replace("_", " ").title()
+                        st.write(f"{risk_color} **{risk_label}**: {risk_value:.1%}")
+                
+                # Recommendations
+                if cultural_result.recommendations:
+                    st.markdown("### 💡 Cultural Adaptation Recommendations")
+                    for i, recommendation in enumerate(cultural_result.recommendations, 1):
+                        st.write(f"{i}. {recommendation}")
+                
+                # Advanced Cultural Visualizations
+                st.markdown("### 📈 Cultural Profile Analysis")
+                
+                col_viz1, col_viz2 = st.columns(2)
+                
+                with col_viz1:
+                    # Cultural sensitivity radar chart
+                    sensitivity_data = {
+                        'Ubuntu Compatibility': cultural_result.ubuntu_compatibility,
+                        'Cross-Cultural Sensitivity': cultural_result.cross_cultural_sensitivity,
+                        'Regional Appropriateness': cultural_result.regional_appropriateness,
+                        'Language Respect': cultural_result.language_respect_index,
+                    }
+                    
+                    fig_radar = go.Figure()
+                    fig_radar.add_trace(go.Scatterpolar(
+                        r=list(sensitivity_data.values()),
+                        theta=list(sensitivity_data.keys()),
+                        fill='toself',
+                        name='Cultural Profile',
+                        line=dict(color='#667eea')
+                    ))
+                    fig_radar.update_layout(
+                        polar=dict(
+                            radialaxis=dict(
+                                visible=True,
+                                range=[0, 1]
+                            )),
+                        showlegend=False,
+                        title="Cultural Sensitivity Profile"
+                    )
+                    st.plotly_chart(fig_radar, use_container_width=True)
+                
+                with col_viz2:
+                    # Risk assessment chart
+                    risk_data = cultural_result.risk_assessment
+                    fig_risk = px.bar(
+                        x=list(risk_data.values()),
+                        y=[name.replace("_", " ").title() for name in risk_data.keys()],
+                        orientation='h',
+                        title="Cultural Risk Assessment",
+                        color=list(risk_data.values()),
+                        color_continuous_scale="Reds"
+                    )
+                    fig_risk.update_layout(showlegend=False)
+                    st.plotly_chart(fig_risk, use_container_width=True)
+                
+                # Market Segment Insights
+                st.markdown("### 🎯 Marketing Intelligence")
+                
+                # Calculate market appropriateness
+                market_score = (
+                    cultural_result.ubuntu_compatibility * 0.3 +
+                    cultural_result.cross_cultural_sensitivity * 0.3 +
+                    cultural_result.regional_appropriateness * 0.2 +
+                    cultural_result.language_respect_index * 0.2
+                )
+                
+                if market_score > 0.8:
+                    market_recommendation = "✅ **Excellent** for broad SA market appeal"
+                    market_color = "success"
+                elif market_score > 0.6:
+                    market_recommendation = "⚠️ **Good** with minor cultural adaptations needed"
+                    market_color = "warning"
+                else:
+                    market_recommendation = "❌ **Needs significant** cultural adaptation"
+                    market_color = "error"
+                
+                st.markdown(f"**Overall Market Suitability**: {market_score:.1%}")
+                st.markdown(f"**Recommendation**: {market_recommendation}")
+                
+                # Context-specific insights
+                context_insights = f"""
+                **Target Audience Profile:**
+                - **Primary**: {race_group} community in {region}
+                - **Language Context**: {language_group} speakers
+                - **Setting**: {urban_rural} environment
+                - **Demographics**: {age_group} with {education_level} education
+                
+                **Cultural Considerations:**
+                - Ubuntu philosophy alignment: {'Strong' if cultural_result.ubuntu_compatibility > 0.7 else 'Moderate' if cultural_result.ubuntu_compatibility > 0.5 else 'Weak'}
+                - Multi-cultural sensitivity: {'High' if cultural_result.cross_cultural_sensitivity > 0.7 else 'Medium' if cultural_result.cross_cultural_sensitivity > 0.5 else 'Low'}
+                - Regional appropriateness: {'Excellent' if cultural_result.regional_appropriateness > 0.8 else 'Good' if cultural_result.regional_appropriateness > 0.6 else 'Needs improvement'}
+                """
+                
+                st.markdown("### 📋 Detailed Cultural Context Analysis")
+                st.markdown(context_insights)
+        else:
+            st.warning("Please enter text to analyze")
+    
+    # Educational section about SA cultural context
+    with st.expander("🎓 Learn About South African Cultural Context"):
+        st.markdown("""
+        ### Understanding South African Cultural Diversity in Communication
+        
+        **🌈 The Rainbow Nation Context:**
+        South Africa's communication styles are deeply influenced by its diverse cultural heritage:
+        
+        **Race Group Dynamics:**
+        - **Black African**: Community-oriented, indirect communication, storytelling tradition
+        - **Coloured**: Mixed cultural influences, creative wordplay, social commentary
+        - **Indian**: Formal respect-based communication, cultural references, subtle humor
+        - **White**: Direct communication style, familiar with irony and sarcasm
+        
+        **Language Influence:**
+        - **English**: Global sarcasm patterns with local adaptations
+        - **Afrikaans**: Unique humor styles, cultural expressions
+        - **African Languages**: Indirect communication, proverbs, respect-based patterns
+        
+        **Ubuntu Philosophy:**
+        "Umuntu ngumuntu ngabantu" - A person is a person through other persons
+        - Emphasizes collective over individual
+        - Community harmony and respect
+        - Influences how humor and criticism are expressed
+        
+        **Regional Variations:**
+        - **Urban areas**: More diverse, cosmopolitan humor
+        - **Rural areas**: Traditional, community-focused communication
+        - **Different provinces**: Unique cultural characteristics and humor styles
+        """)
+    
+    # Quick cultural tips
+    st.markdown("### 🔧 Quick Cultural Adaptation Tips")
+    tips_col1, tips_col2 = st.columns(2)
+    
+    with tips_col1:
+        st.markdown("""
+        **✅ Cultural Best Practices:**
+        - Respect age and hierarchy
+        - Use inclusive language
+        - Consider Ubuntu principles
+        - Acknowledge linguistic diversity
+        - Be sensitive to historical context
+        """)
+    
+    with tips_col2:
+        st.markdown("""
+        **⚠️ Common Cultural Pitfalls:**
+        - Direct confrontation without respect
+        - Ignoring community values
+        - Stereotypical assumptions
+        - Insensitive historical references
+        - Excluding other cultural groups
+        """)
 
 # Tab 3: Basic Monitoring (Neural Monitoring)
 with tab3:
