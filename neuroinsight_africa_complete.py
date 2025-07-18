@@ -315,9 +315,11 @@ class NeuroInsightAfricaComplete:
             if region in brain_activities:
                 # Get mean activity for this region
                 activity_array = brain_activities[region]
-                if hasattr(activity_array, 'mean'):
-                    total_activity += float(activity_array.mean())
+                if hasattr(activity_array, '__iter__') and not isinstance(activity_array, str):
+                    # If it's an array/list, take the mean
+                    total_activity += sum(activity_array) / len(activity_array)
                 else:
+                    # If it's a single value
                     total_activity += float(activity_array)
                 region_count += 1
         
