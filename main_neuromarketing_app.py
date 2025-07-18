@@ -191,7 +191,7 @@ with tab1:
                 showlegend=False,
                 height=300
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="tab1_emotion_radar")
 
 # Tab 2: Enhanced South African Sarcasm & Irony Detection
 with tab2:
@@ -335,7 +335,7 @@ with tab2:
                             showlegend=False,
                             title="Enhanced Cultural Sensitivity Profile"
                         )
-                        st.plotly_chart(enhanced_radar_fig, use_container_width=True)
+                        st.plotly_chart(enhanced_radar_fig, use_container_width=True, key="tab2_enhanced_radar")
                     except Exception as e:
                         st.error(f"Error creating cultural sensitivity chart: {str(e)}")
                         st.info("Unable to display cultural sensitivity radar chart at this time.")
@@ -354,7 +354,7 @@ with tab2:
                                 color_continuous_scale="Reds"
                             )
                             fig_risk.update_layout(showlegend=False)
-                            st.plotly_chart(fig_risk, use_container_width=True)
+                            st.plotly_chart(fig_risk, use_container_width=True, key="tab2_risk_chart")
                         else:
                             st.info("No risk assessment data available")
                     except Exception as e:
@@ -567,7 +567,7 @@ with tab4:
                 )
             
             fig.update_layout(height=500, title_text="Marketing Performance Dashboard")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="tab4_performance_dashboard")
 
 # Tab 5: Media Input Hub (NEW - PR #4 Media Capabilities)
 with tab5:
@@ -768,7 +768,7 @@ with tab6:
                         y='Activity',
                         title="Neural Response by Brain Region"
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, use_container_width=True, key="tab6_neural_response")
             
             # Generate attention heatmap
             st.markdown("#### Attention Heatmap")
@@ -779,7 +779,7 @@ with tab6:
                 color_continuous_scale="Viridis",
                 title="Environmental Attention Patterns"
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="tab6_attention_heatmap")
         else:
             st.info("Start a neural simulation to see detailed analysis")
 
@@ -939,7 +939,7 @@ with tab8:
             showlegend=False,
             title="Cultural Sentiment Profile"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="tab8_cultural_sentiment")
 
 # Tab 9: Deep Research Engine (NEW - PR #3 Research Module)
 with tab9:
