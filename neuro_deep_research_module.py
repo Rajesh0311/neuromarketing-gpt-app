@@ -133,7 +133,6 @@ class NeuroResearchModule:
             }
         }
     
-    @lru_cache(maxsize=100)
     def search_datasets(self, query: str, sources: List[str] = None, 
                        limit: int = 50) -> List[ResearchDataset]:
         """
