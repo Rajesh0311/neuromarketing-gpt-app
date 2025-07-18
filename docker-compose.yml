@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  neuromarketing-app:
+    build: .
+    container_name: neuromarketing-gpt
+    ports:
+      - "8501:8501"
+    environment:
+      # API Keys (set these in your .env file)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      
+      # Application settings
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      
+      # Performance settings
+      - STREAMLIT_SERVER_MAX_UPLOAD_SIZE=${MAX_UPLOAD_SIZE:-1000}
+      - STREAMLIT_SERVER_MAX_MESSAGE_SIZE=${MAX_MESSAGE_SIZE:-1000}
+      
+      # Feature flags
+      - ENABLE_ADVANCED_FEATURES=${ENABLE_ADVANCED_FEATURES:-true}
+      - ENABLE_CACHING=${ENABLE_CACHING:-true}
+    
+    volumes:
+      # Persist data and cache
+      - ./data:/app/data
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    
+    restart: unless-stopped
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Redis for caching (uncomment to enable)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: neuromarketing-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   restart: unless-stopped
+
+  # Optional: PostgreSQL database (uncomment to enable)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: neuromarketing-postgres
+  #   environment:
+  #     POSTGRES_DB: neuromarketing
+  #     POSTGRES_USER: ${POSTGRES_USER:-neurouser}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+# Optional volumes for persistence
+volumes:
+  redis_data:
+  postgres_data:
