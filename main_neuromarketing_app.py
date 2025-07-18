@@ -18,6 +18,12 @@ from typing import Dict, List, Optional, Any, Union
 import warnings
 warnings.filterwarnings('ignore')
 
+# Import PR modules
+from advanced_sentiment_module import AdvancedSentimentAnalyzer
+from neuro_deep_research_module import NeuroResearchModule
+from neural_simulation import DigitalBrainTwin
+from export_module import ProfessionalExporter
+
 # Page configuration
 st.set_page_config(
     page_title="NeuroMarketing GPT - Unified Platform",
@@ -83,6 +89,16 @@ if 'uploaded_media' not in st.session_state:
 if 'environmental_data' not in st.session_state:
     st.session_state.environmental_data = {}
 
+# Initialize PR modules
+if 'sentiment_analyzer' not in st.session_state:
+    st.session_state.sentiment_analyzer = AdvancedSentimentAnalyzer()
+if 'research_module' not in st.session_state:
+    st.session_state.research_module = NeuroResearchModule()
+if 'brain_twin' not in st.session_state:
+    st.session_state.brain_twin = DigitalBrainTwin()
+if 'exporter' not in st.session_state:
+    st.session_state.exporter = ProfessionalExporter()
+
 # Main application header
 st.markdown("""
 <div class="main-header">
@@ -127,35 +143,27 @@ with tab1:
         if st.button("🔍 Analyze Sentiment", type="primary"):
             if analysis_text:
                 with st.spinner("Performing advanced sentiment analysis..."):
-                    # Simulate advanced analysis
-                    time.sleep(2)
+                    # Use actual AdvancedSentimentAnalyzer
+                    analyzer = st.session_state.sentiment_analyzer
                     
-                    # Generate comprehensive results
-                    results = {
-                        'overall_sentiment': np.random.choice(['Positive', 'Negative', 'Neutral'], p=[0.6, 0.2, 0.2]),
-                        'confidence': np.random.uniform(0.75, 0.95),
-                        'emotions': {
-                            'Joy': np.random.uniform(0.4, 0.8),
-                            'Trust': np.random.uniform(0.5, 0.9),
-                            'Fear': np.random.uniform(0.1, 0.3),
-                            'Surprise': np.random.uniform(0.2, 0.6),
-                            'Sadness': np.random.uniform(0.1, 0.3),
-                            'Disgust': np.random.uniform(0.05, 0.2),
-                            'Anger': np.random.uniform(0.05, 0.25),
-                            'Anticipation': np.random.uniform(0.3, 0.7)
-                        },
-                        'marketing_metrics': {
-                            'Brand Appeal': np.random.uniform(0.65, 0.85),
-                            'Purchase Intent': np.random.uniform(0.60, 0.80),
-                            'Viral Potential': np.random.uniform(0.50, 0.75),
-                            'Memorability': np.random.uniform(0.55, 0.80)
-                        }
-                    }
+                    # Perform comprehensive analysis using the PR #4 module
+                    results = analyzer.analyze_comprehensive_sentiment(analysis_text)
+                    
+                    # Add analysis type specific enhancements
+                    if analysis_type == "Marketing Insights":
+                        marketing_analysis = analyzer.analyze_marketing_potential(analysis_text)
+                        results.update(marketing_analysis)
+                    elif analysis_type == "Cross-Cultural":
+                        cultural_analysis = analyzer.analyze_cultural_sensitivity(analysis_text)
+                        results.update(cultural_analysis)
+                    elif analysis_type == "Psychological Profiling":
+                        psych_analysis = analyzer.analyze_psychological_triggers(analysis_text)
+                        results.update(psych_analysis)
                     
                     st.session_state.analysis_results['sentiment'] = results
                     
                     # Display results
-                    st.success("✅ Analysis Complete!")
+                    st.success("✅ Advanced Analysis Complete!")
     
     with col2:
         st.markdown("### Analysis Insights")
@@ -476,41 +484,92 @@ with tab6:
         recording_mode = st.selectbox("Recording Mode:", ["Mobile Phone", "Professional Setup", "360° Camera"])
         
         if st.button("🎥 Start Recording"):
-            with st.spinner("Initializing recording..."):
-                time.sleep(2)
-                st.success("✅ Recording started!")
+            with st.spinner("Initializing neural recording and environmental analysis..."):
+                # Use actual DigitalBrainTwin for neural simulation
+                brain_twin = st.session_state.brain_twin
                 
-                # Simulate walkthrough data
+                # Create consumer profile for simulation
+                consumer_profile = {
+                    'age_group': '25-35',
+                    'income_level': 'middle',
+                    'shopping_behavior': 'planned',
+                    'brand_loyalty': 0.7
+                }
+                
+                # Simulate consumer response to environment
+                marketing_stimulus = {
+                    'type': simulation_type.lower().replace(' ', '_'),
+                    'lighting': lighting,
+                    'noise_level': noise_level,
+                    'crowd_density': crowd_density,
+                    'temperature': temperature
+                }
+                
+                # Get neural simulation results
+                neural_response = brain_twin.simulate_marketing_response(
+                    stimulus_text=f"Environmental simulation: {simulation_type}",
+                    consumer_type='analytical_buyer',
+                    duration=10.0,
+                    stimulus_type='environmental'
+                )
+                
+                # Combine with walkthrough data
                 walkthrough_data = {
-                    'duration': np.random.randint(3, 15),
-                    'decision_points': np.random.randint(5, 20),
-                    'attention_zones': np.random.randint(8, 25),
-                    'emotional_peaks': np.random.randint(3, 8)
+                    'duration': neural_response.get('duration', np.random.randint(3, 15)),
+                    'decision_points': neural_response.get('behavioral_outcomes', {}).get('decision_events', []),
+                    'attention_zones': neural_response.get('behavioral_outcomes', {}).get('attention_scores', []),
+                    'emotional_peaks': neural_response.get('behavioral_outcomes', {}).get('emotional_response', []),
+                    'neural_activity': neural_response.get('brain_activity', {}),
+                    'engagement_score': neural_response.get('behavioral_outcomes', {}).get('overall_engagement', 0.75)
                 }
                 
                 st.session_state.environmental_data['walkthrough'] = walkthrough_data
+                st.success("✅ Neural simulation and recording completed!")
         
         if 'walkthrough' in st.session_state.environmental_data:
             data = st.session_state.environmental_data['walkthrough']
             st.metric("Duration", f"{data['duration']} min")
-            st.metric("Decision Points", data['decision_points'])
-            st.metric("Attention Zones", data['attention_zones'])
+            st.metric("Decision Points", len(data.get('decision_points', [])))
+            st.metric("Attention Zones", len(data.get('attention_zones', [])))
+            st.metric("Neural Engagement", f"{data.get('engagement_score', 0.75):.1%}")
     
     with col3:
-        st.markdown("### Spatial Analysis")
+        st.markdown("### Neural & Spatial Analysis")
         
         if 'walkthrough' in st.session_state.environmental_data:
-            # Generate heatmap simulation
+            data = st.session_state.environmental_data['walkthrough']
+            
+            # Display neural activity if available
+            if 'neural_activity' in data and data['neural_activity']:
+                st.markdown("#### Brain Region Activity")
+                neural_data = data['neural_activity']
+                
+                if 'region_activity' in neural_data:
+                    region_df = pd.DataFrame([
+                        {'Region': region, 'Activity': activity} 
+                        for region, activity in neural_data['region_activity'].items()
+                    ])
+                    
+                    fig = px.bar(
+                        region_df, 
+                        x='Region', 
+                        y='Activity',
+                        title="Neural Response by Brain Region"
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+            
+            # Generate attention heatmap
+            st.markdown("#### Attention Heatmap")
             heatmap_data = np.random.rand(10, 10)
             
             fig = px.imshow(
                 heatmap_data,
                 color_continuous_scale="Viridis",
-                title="Attention Heatmap"
+                title="Environmental Attention Patterns"
             )
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("Start a walkthrough recording to see spatial analysis")
+            st.info("Start a neural simulation to see detailed analysis")
 
 # Tab 7: Reports & Export (Enhanced Professional Reports)
 with tab7:
@@ -536,31 +595,52 @@ with tab7:
         include_recommendations = st.checkbox("Include Recommendations", True)
         
         if st.button("📊 Generate Report", type="primary"):
-            with st.spinner("Generating comprehensive report..."):
-                time.sleep(3)
+            with st.spinner("Generating comprehensive professional report..."):
+                # Use actual ProfessionalExporter
+                exporter = st.session_state.exporter
                 
-                # Generate report content
-                report_content = f"""
-# NeuroMarketing Analysis Report
-**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-**Report Type:** {report_type}
-
-## Executive Summary
-- Analysis completed across multiple dimensions
-- {len(st.session_state.uploaded_media['text'])} text inputs analyzed
-- {len(st.session_state.uploaded_media['images'])} images processed
-- Environmental simulation data collected
-
-## Key Findings
-- Overall sentiment: {'Positive' if np.random.random() > 0.3 else 'Neutral'}
-- Engagement score: {np.random.uniform(0.7, 0.9):.1%}
-- Brand appeal: {np.random.uniform(0.6, 0.8):.1%}
-
-## Recommendations
-1. Optimize content for higher emotional engagement
-2. Enhance visual hierarchy in marketing materials
-3. Consider environmental factors in customer journey design
-"""
+                # Collect all analysis data from session state
+                analysis_data = {
+                    'sentiment_analysis': st.session_state.analysis_results.get('sentiment', {}),
+                    'research_data': st.session_state.analysis_results.get('openneuro_datasets', {}),
+                    'literature_review': st.session_state.analysis_results.get('pubmed_literature', {}),
+                    'environmental_simulation': st.session_state.environmental_data.get('walkthrough', {}),
+                    'media_content': {
+                        'text_inputs': len(st.session_state.uploaded_media['text']),
+                        'images': len(st.session_state.uploaded_media['images']),
+                        'videos': len(st.session_state.uploaded_media['videos']),
+                        'audio': len(st.session_state.uploaded_media['audio']),
+                        'urls': len(st.session_state.uploaded_media['urls'])
+                    },
+                    'report_metadata': {
+                        'report_type': report_type,
+                        'generated_at': datetime.now().isoformat(),
+                        'include_visuals': include_visuals,
+                        'include_raw_data': include_raw_data,
+                        'include_recommendations': include_recommendations
+                    }
+                }
+                
+                # Generate professional report
+                export_result = exporter.export_comprehensive_report(
+                    analysis_data=analysis_data,
+                    format_type=export_format.lower(),
+                    template_style='professional',
+                    include_visuals=include_visuals,
+                    include_raw_data=include_raw_data
+                )
+                
+                st.session_state.analysis_results['export_result'] = export_result
+                
+                if export_result.get('success'):
+                    st.success("✅ Professional report generated successfully!")
+                    
+                    # Show export details
+                    if export_result.get('export_info'):
+                        info = export_result['export_info']
+                        st.info(f"📄 Report: {info.get('filename', 'report')} | Size: {info.get('size_mb', 0):.1f} MB")
+                else:
+                    st.error("❌ Report generation failed. Please try again.")
                 
                 st.success("✅ Report generated successfully!")
                 
@@ -671,30 +751,41 @@ with tab9:
             
             if st.button("🔍 Search Datasets"):
                 with st.spinner("Searching across multiple databases..."):
-                    time.sleep(2)
+                    # Use actual NeuroResearchModule
+                    research_module = st.session_state.research_module
                     
-                    # Simulate dataset results
-                    datasets_found = np.random.randint(15, 45)
+                    # Search OpenNeuro datasets
+                    if "OpenNeuro" in data_sources and search_query:
+                        openneuro_results = research_module.fetch_openneuro_datasets(search_query, limit=20)
+                        st.session_state.analysis_results['openneuro_datasets'] = openneuro_results
                     
-                    st.success(f"✅ Found {datasets_found} datasets across {len(data_sources)} sources")
+                    # Search PubMed literature
+                    if "PubMed" in data_sources and search_query:
+                        pubmed_results = research_module.search_pubmed_literature(search_query, max_results=15)
+                        st.session_state.analysis_results['pubmed_literature'] = pubmed_results
                     
-                    # Sample dataset results
-                    sample_datasets = [
-                        {"name": "Consumer EEG Response Dataset", "subjects": 45, "source": "OpenNeuro"},
-                        {"name": "Marketing Stimulus EEG Data", "subjects": 32, "source": "Zenodo"},
-                        {"name": "Brand Recognition Neural Patterns", "subjects": 28, "source": "IEEE DataPort"}
-                    ]
+                    # Generate research synthesis
+                    if search_query:
+                        synthesis = research_module.generate_research_synthesis(search_query)
+                        st.session_state.analysis_results['research_synthesis'] = synthesis
                     
-                    for dataset in sample_datasets:
-                        with st.expander(f"📊 {dataset['name']}"):
-                            col_a, col_b, col_c = st.columns(3)
-                            with col_a:
-                                st.metric("Subjects", dataset['subjects'])
-                            with col_b:
-                                st.metric("Source", dataset['source'])
-                            with col_c:
-                                if st.button(f"📥 Download", key=dataset['name']):
-                                    st.success("Dataset download initiated")
+                    st.success(f"✅ Search completed across {len(data_sources)} sources")
+                    
+                    # Display OpenNeuro results if available
+                    if 'openneuro_datasets' in st.session_state.analysis_results:
+                        datasets = st.session_state.analysis_results['openneuro_datasets']
+                        if datasets.get('success') and datasets.get('datasets'):
+                            st.markdown("### OpenNeuro Datasets")
+                            for dataset in datasets['datasets'][:5]:  # Show first 5
+                                with st.expander(f"📊 {dataset.get('label', 'Unknown Dataset')}"):
+                                    col_a, col_b, col_c = st.columns(3)
+                                    with col_a:
+                                        st.metric("Dataset ID", dataset.get('id', 'N/A'))
+                                    with col_b:
+                                        st.metric("Created", dataset.get('created', 'N/A')[:10] if dataset.get('created') else 'N/A')
+                                    with col_c:
+                                        if st.button(f"📥 View Details", key=f"dataset_{dataset.get('id')}"):
+                                            st.success("Dataset details retrieved")
         
         with col2:
             st.markdown("### Search Status")
