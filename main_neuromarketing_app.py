@@ -191,7 +191,7 @@ with tab1:
                 showlegend=False,
                 height=300
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="tab1_emotion_radar")
 
 # Tab 2: Enhanced South African Sarcasm & Irony Detection
 with tab2:
@@ -304,46 +304,62 @@ with tab2:
                 col_viz1, col_viz2 = st.columns(2)
                 
                 with col_viz1:
-                    # Cultural sensitivity radar chart
-                    sensitivity_data = {
-                        'Ubuntu Compatibility': cultural_result.ubuntu_compatibility,
-                        'Cross-Cultural Sensitivity': cultural_result.cross_cultural_sensitivity,
-                        'Regional Appropriateness': cultural_result.regional_appropriateness,
-                        'Language Respect': cultural_result.language_respect_index,
-                    }
-                    
-                    fig_radar = go.Figure()
-                    fig_radar.add_trace(go.Scatterpolar(
-                        r=list(sensitivity_data.values()),
-                        theta=list(sensitivity_data.keys()),
-                        fill='toself',
-                        name='Cultural Profile',
-                        line=dict(color='#667eea')
-                    ))
-                    fig_radar.update_layout(
-                        polar=dict(
-                            radialaxis=dict(
-                                visible=True,
-                                range=[0, 1]
-                            )),
-                        showlegend=False,
-                        title="Cultural Sensitivity Profile"
-                    )
-                    st.plotly_chart(fig_radar, use_container_width=True)
+                    # Enhanced cultural sensitivity radar chart
+                    try:
+                        enhanced_sensitivity_data = {
+                            'Ubuntu Compatibility': cultural_result.ubuntu_compatibility,
+                            'Cross-Cultural Sensitivity': cultural_result.cross_cultural_sensitivity,
+                            'Regional Appropriateness': cultural_result.regional_appropriateness,
+                            'Language Respect': cultural_result.language_respect_index,
+                        }
+                        
+                        # Ensure all values are valid numbers
+                        for key, value in enhanced_sensitivity_data.items():
+                            if not isinstance(value, (int, float)) or np.isnan(value):
+                                enhanced_sensitivity_data[key] = 0.0
+                        
+                        enhanced_radar_fig = go.Figure()
+                        enhanced_radar_fig.add_trace(go.Scatterpolar(
+                            r=list(enhanced_sensitivity_data.values()),
+                            theta=list(enhanced_sensitivity_data.keys()),
+                            fill='toself',
+                            name='Cultural Profile',
+                            line=dict(color='#667eea')
+                        ))
+                        enhanced_radar_fig.update_layout(
+                            polar=dict(
+                                radialaxis=dict(
+                                    visible=True,
+                                    range=[0, 1]
+                                )),
+                            showlegend=False,
+                            title="Enhanced Cultural Sensitivity Profile"
+                        )
+                        st.plotly_chart(enhanced_radar_fig, use_container_width=True, key="tab2_enhanced_radar")
+                    except Exception as e:
+                        st.error(f"Error creating cultural sensitivity chart: {str(e)}")
+                        st.info("Unable to display cultural sensitivity radar chart at this time.")
                 
                 with col_viz2:
                     # Risk assessment chart
-                    risk_data = cultural_result.risk_assessment
-                    fig_risk = px.bar(
-                        x=list(risk_data.values()),
-                        y=[name.replace("_", " ").title() for name in risk_data.keys()],
-                        orientation='h',
-                        title="Cultural Risk Assessment",
-                        color=list(risk_data.values()),
-                        color_continuous_scale="Reds"
-                    )
-                    fig_risk.update_layout(showlegend=False)
-                    st.plotly_chart(fig_risk, use_container_width=True)
+                    try:
+                        risk_data = cultural_result.risk_assessment
+                        if risk_data and len(risk_data) > 0:
+                            fig_risk = px.bar(
+                                x=list(risk_data.values()),
+                                y=[name.replace("_", " ").title() for name in risk_data.keys()],
+                                orientation='h',
+                                title="Cultural Risk Assessment",
+                                color=list(risk_data.values()),
+                                color_continuous_scale="Reds"
+                            )
+                            fig_risk.update_layout(showlegend=False)
+                            st.plotly_chart(fig_risk, use_container_width=True, key="tab2_risk_chart")
+                        else:
+                            st.info("No risk assessment data available")
+                    except Exception as e:
+                        st.error(f"Error creating risk assessment chart: {str(e)}")
+                        st.info("Unable to display risk assessment chart at this time.")
                 
                 # Market Segment Insights
                 st.markdown("### 🎯 Marketing Intelligence")
@@ -551,7 +567,7 @@ with tab4:
                 )
             
             fig.update_layout(height=500, title_text="Marketing Performance Dashboard")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="tab4_performance_dashboard")
 
 # Tab 5: Media Input Hub (NEW - PR #4 Media Capabilities)
 with tab5:
@@ -752,7 +768,7 @@ with tab6:
                         y='Activity',
                         title="Neural Response by Brain Region"
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, use_container_width=True, key="tab6_neural_response")
             
             # Generate attention heatmap
             st.markdown("#### Attention Heatmap")
@@ -763,7 +779,7 @@ with tab6:
                 color_continuous_scale="Viridis",
                 title="Environmental Attention Patterns"
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="tab6_attention_heatmap")
         else:
             st.info("Start a neural simulation to see detailed analysis")
 
@@ -923,7 +939,7 @@ with tab8:
             showlegend=False,
             title="Cultural Sentiment Profile"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key="tab8_cultural_sentiment")
 
 # Tab 9: Deep Research Engine (NEW - PR #3 Research Module)
 with tab9:
