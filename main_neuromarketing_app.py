@@ -21,7 +21,9 @@ warnings.filterwarnings('ignore')
 # Import PR modules
 from advanced_sentiment_module import AdvancedSentimentAnalyzer
 from neuro_deep_research_module import NeuroResearchModule
-from neural_simulation import DigitalBrainTwin
+from neural_simulation import DigitalBrainTwin, AdvancedNeuralProcessor
+from environmental_simulation_complete import EnvironmentalSimulationComplete
+from neuroinsight_africa_complete import AdvancedNeuroAfricaFeatures
 from export_module import ProfessionalExporter
 from south_african_cultural_analyzer import SouthAfricanCulturalAnalyzer, SAulturalContext, get_sa_cultural_options
 
@@ -97,6 +99,12 @@ if 'research_module' not in st.session_state:
     st.session_state.research_module = NeuroResearchModule()
 if 'brain_twin' not in st.session_state:
     st.session_state.brain_twin = DigitalBrainTwin()
+if 'advanced_neural_processor' not in st.session_state:
+    st.session_state.advanced_neural_processor = AdvancedNeuralProcessor()
+if 'environmental_simulation' not in st.session_state:
+    st.session_state.environmental_simulation = EnvironmentalSimulationComplete()
+if 'neuro_africa_features' not in st.session_state:
+    st.session_state.neuro_africa_features = AdvancedNeuroAfricaFeatures()
 if 'exporter' not in st.session_state:
     st.session_state.exporter = ProfessionalExporter()
 if 'sa_cultural_analyzer' not in st.session_state:
@@ -780,126 +788,405 @@ with tab5:
     with col_e:
         st.metric("URLs", len(st.session_state.uploaded_media['urls']))
 
-# Tab 6: Environmental Simulation (NEW - PR #5 Environmental Features)
+# Tab 6: Environmental Simulation (ENHANCED - Comprehensive Environmental Analysis)
 with tab6:
-    st.markdown('<div class="tab-header"><h2>🏪 Environmental Simulation</h2><p>Advanced walkthrough recording and environmental sensor simulation</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="tab-header"><h2>🏪 Comprehensive Environmental Simulation</h2><p>Advanced 5-type environmental analysis with automotive suite, mobile recording, and multi-sensory integration</p></div>', unsafe_allow_html=True)
     
-    simulation_type = st.selectbox(
-        "Simulation Type:",
-        ["Retail Store Navigation", "Drive-Through Experience", "Museum Exhibition", "Casino Environment", "Automotive Showroom"]
-    )
+    # Create tabs for different simulation categories
+    env_tab1, env_tab2, env_tab3, env_tab4 = st.tabs([
+        "🏪 5 Core Simulations", 
+        "🚗 Automotive Suite", 
+        "📱 Mobile Recording", 
+        "👁️ Multi-Sensory Analysis"
+    ])
     
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.markdown("### Environment Setup")
+    # 5 Core Environmental Simulations
+    with env_tab1:
+        st.markdown("### 🏪 Core Environmental Simulations")
         
-        if simulation_type == "Retail Store Navigation":
-            store_type = st.selectbox("Store Type:", ["Grocery", "Fashion", "Electronics", "Pharmacy"])
-            layout_style = st.selectbox("Layout:", ["Grid", "Loop", "Free-form", "Boutique"])
-            
-        elif simulation_type == "Drive-Through Experience":
-            restaurant_type = st.selectbox("Restaurant Type:", ["Fast Food", "Coffee", "Ice Cream", "Pharmacy"])
-            menu_complexity = st.selectbox("Menu Complexity:", ["Simple", "Medium", "Complex"])
-            
-        st.markdown("### Environmental Factors")
-        lighting = st.slider("Lighting Level", 0, 100, 70)
-        noise_level = st.slider("Noise Level", 0, 100, 30)
-        crowd_density = st.slider("Crowd Density", 0, 100, 50)
-        temperature = st.slider("Temperature (°F)", 60, 80, 72)
-    
-    with col2:
-        st.markdown("### Walkthrough Recording")
+        col1, col2, col3 = st.columns(3)
         
-        recording_mode = st.selectbox("Recording Mode:", ["Mobile Phone", "Professional Setup", "360° Camera"])
-        
-        if st.button("🎥 Start Recording"):
-            with st.spinner("Initializing neural recording and environmental analysis..."):
-                # Use actual DigitalBrainTwin for neural simulation
-                brain_twin = st.session_state.brain_twin
-                
-                # Create consumer profile for simulation
-                consumer_profile = {
-                    'age_group': '25-35',
-                    'income_level': 'middle',
-                    'shopping_behavior': 'planned',
-                    'brand_loyalty': 0.7
-                }
-                
-                # Simulate consumer response to environment
-                marketing_stimulus = {
-                    'type': simulation_type.lower().replace(' ', '_'),
-                    'lighting': lighting,
-                    'noise_level': noise_level,
-                    'crowd_density': crowd_density,
-                    'temperature': temperature
-                }
-                
-                # Get neural simulation results
-                neural_response = brain_twin.simulate_marketing_response(
-                    stimulus_text=f"Environmental simulation: {simulation_type}",
-                    consumer_type='analytical_buyer',
-                    duration=10.0,
-                    stimulus_type='environmental'
-                )
-                
-                # Combine with walkthrough data
-                walkthrough_data = {
-                    'duration': neural_response.get('duration', np.random.randint(3, 15)),
-                    'decision_points': neural_response.get('behavioral_outcomes', {}).get('decision_events', []),
-                    'attention_zones': neural_response.get('behavioral_outcomes', {}).get('attention_scores', []),
-                    'emotional_peaks': neural_response.get('behavioral_outcomes', {}).get('emotional_response', []),
-                    'neural_activity': neural_response.get('brain_activity', {}),
-                    'engagement_score': neural_response.get('behavioral_outcomes', {}).get('overall_engagement', 0.75)
-                }
-                
-                st.session_state.environmental_data['walkthrough'] = walkthrough_data
-                st.success("✅ Neural simulation and recording completed!")
-        
-        if 'walkthrough' in st.session_state.environmental_data:
-            data = st.session_state.environmental_data['walkthrough']
-            st.metric("Duration", f"{data['duration']} min")
-            st.metric("Decision Points", len(data.get('decision_points', [])))
-            st.metric("Attention Zones", len(data.get('attention_zones', [])))
-            st.metric("Neural Engagement", f"{data.get('engagement_score', 0.75):.1%}")
-    
-    with col3:
-        st.markdown("### Neural & Spatial Analysis")
-        
-        if 'walkthrough' in st.session_state.environmental_data:
-            data = st.session_state.environmental_data['walkthrough']
-            
-            # Display neural activity if available
-            if 'neural_activity' in data and data['neural_activity']:
-                st.markdown("#### Brain Region Activity")
-                neural_data = data['neural_activity']
-                
-                if 'region_activity' in neural_data:
-                    region_df = pd.DataFrame([
-                        {'Region': region, 'Activity': activity} 
-                        for region, activity in neural_data['region_activity'].items()
-                    ])
-                    
-                    fig = px.bar(
-                        region_df, 
-                        x='Region', 
-                        y='Activity',
-                        title="Neural Response by Brain Region"
-                    )
-                    st.plotly_chart(fig, use_container_width=True, key="tab6_neural_response")
-            
-            # Generate attention heatmap
-            st.markdown("#### Attention Heatmap")
-            heatmap_data = np.random.rand(10, 10)
-            
-            fig = px.imshow(
-                heatmap_data,
-                color_continuous_scale="Viridis",
-                title="Environmental Attention Patterns"
+        with col1:
+            st.markdown("#### Simulation Setup")
+            simulation_type = st.selectbox(
+                "Simulation Type:",
+                ["retail_store", "drive_through", "museum_exhibition", "casino_environment", "vr_ar_gaming"],
+                format_func=lambda x: {
+                    "retail_store": "🏪 Retail Store Walkthrough",
+                    "drive_through": "🚗 Drive-Through Experience", 
+                    "museum_exhibition": "🏛️ Museum & Exhibition Flow",
+                    "casino_environment": "🎰 Casino Environment",
+                    "vr_ar_gaming": "🥽 VR/AR Gaming Flow"
+                }[x]
             )
-            st.plotly_chart(fig, use_container_width=True, key="tab6_attention_heatmap")
-        else:
-            st.info("Start a neural simulation to see detailed analysis")
+            
+            # Dynamic parameters based on simulation type
+            if simulation_type == "retail_store":
+                store_type = st.selectbox("Store Type:", ["grocery", "fashion", "electronics", "pharmacy"])
+                layout_style = st.selectbox("Layout:", ["grid", "loop", "free_form", "boutique"])
+                params = {"store_type": store_type, "layout_style": layout_style}
+            elif simulation_type == "drive_through":
+                restaurant_type = st.selectbox("Restaurant Type:", ["fast_food", "coffee", "ice_cream", "pharmacy"])
+                menu_complexity = st.selectbox("Menu Complexity:", ["simple", "medium", "complex"])
+                params = {"restaurant_type": restaurant_type, "menu_complexity": menu_complexity}
+            elif simulation_type == "museum_exhibition":
+                exhibit_type = st.selectbox("Exhibit Type:", ["art", "science", "history", "interactive"])
+                visitor_flow = st.selectbox("Expected Flow:", ["low", "medium", "high"])
+                params = {"exhibit_type": exhibit_type, "visitor_flow": visitor_flow}
+            elif simulation_type == "casino_environment":
+                gaming_area = st.selectbox("Gaming Area:", ["slots", "tables", "sports_betting", "mixed"])
+                ambiance_level = st.selectbox("Ambiance:", ["subtle", "moderate", "intense"])
+                params = {"gaming_area": gaming_area, "ambiance_level": ambiance_level}
+            else:  # vr_ar_gaming
+                platform_type = st.selectbox("Platform Type:", ["vr_headset", "ar_mobile", "mixed_reality"])
+                interaction_complexity = st.selectbox("Interaction:", ["simple", "moderate", "advanced"])
+                params = {"platform_type": platform_type, "interaction_complexity": interaction_complexity}
+            
+            # Environmental factors
+            st.markdown("#### Environmental Factors")
+            lighting = st.slider("Lighting Level", 0, 100, 70)
+            noise_level = st.slider("Noise Level", 0, 100, 30)
+            crowd_density = st.slider("Crowd Density", 0, 100, 50)
+            temperature = st.slider("Temperature (°F)", 60, 80, 72)
+            
+            params.update({
+                "lighting": lighting,
+                "noise_level": noise_level,
+                "crowd_density": crowd_density,
+                "temperature": temperature
+            })
+        
+        with col2:
+            st.markdown("#### Advanced Neural Processing")
+            
+            # Advanced neural options
+            use_white_noise = st.checkbox("White Noise EEG Baseline", True)
+            use_dark_matter = st.checkbox("Dark Matter Neural Patterns", True)
+            cultural_context = st.selectbox("Cultural Context:", 
+                ["neutral", "collectivist", "individualist", "ubuntu", "high_context", "low_context"])
+            
+            if st.button("🧠 Run Advanced Environmental Simulation", type="primary"):
+                with st.spinner("Running comprehensive environmental and neural analysis..."):
+                    # Get environmental simulation module
+                    env_sim = st.session_state.environmental_simulation
+                    neural_processor = st.session_state.advanced_neural_processor
+                    
+                    # Run comprehensive environmental simulation
+                    env_results = env_sim.run_environmental_simulation(simulation_type, params)
+                    
+                    # Generate advanced neural baseline if enabled
+                    if use_white_noise:
+                        eeg_baseline = neural_processor.generate_white_noise_eeg_baseline(
+                            duration=10.0, cultural_context=cultural_context
+                        )
+                        env_results['eeg_baseline'] = eeg_baseline
+                    
+                    # Add dark matter patterns if enabled
+                    if use_dark_matter and use_white_noise:
+                        dark_matter = neural_processor.simulate_dark_matter_neural_patterns(
+                            eeg_baseline, unconscious_stimulus=f"{simulation_type}_environment"
+                        )
+                        env_results['dark_matter_patterns'] = dark_matter
+                    
+                    # Advanced neural analysis
+                    if use_white_noise:
+                        cross_freq = neural_processor.analyze_cross_frequency_coupling(eeg_baseline)
+                        connectivity = neural_processor.map_neural_connectivity(eeg_baseline)
+                        cognitive_load = neural_processor.measure_cognitive_load(eeg_baseline, task_complexity="medium")
+                        
+                        env_results['cross_frequency_coupling'] = cross_freq
+                        env_results['neural_connectivity'] = connectivity
+                        env_results['cognitive_load'] = cognitive_load
+                    
+                    # Enhanced behavior prediction
+                    enhanced_predictions = neural_processor.predict_consumer_behavior_enhanced(
+                        env_results, stimulus_type="environmental", cultural_context=cultural_context
+                    )
+                    env_results['enhanced_predictions'] = enhanced_predictions
+                    
+                    # Store results
+                    st.session_state.environmental_data['comprehensive_simulation'] = env_results
+                    st.success("✅ Comprehensive environmental and neural simulation completed!")
+        
+        with col3:
+            st.markdown("#### Simulation Results")
+            
+            if 'comprehensive_simulation' in st.session_state.environmental_data:
+                results = st.session_state.environmental_data['comprehensive_simulation']
+                
+                # Key metrics
+                if 'behavioral_predictions' in results:
+                    behavior = results['behavioral_predictions']
+                    st.metric("Conversion Probability", f"{behavior.get('conversion_probability', 0):.1%}")
+                    st.metric("Satisfaction Score", f"{behavior.get('satisfaction_score', 0):.1f}/5.0")
+                    st.metric("Time Spent", f"{behavior.get('time_spent', 0):.1f} min")
+                
+                # Enhanced predictions if available
+                if 'enhanced_predictions' in results:
+                    enhanced = results['enhanced_predictions']['enhanced_predictions']
+                    st.metric("Neural Engagement", f"{enhanced.get('engagement_score', 0):.1%}")
+                    st.metric("Unconscious Appeal", f"{enhanced.get('unconscious_appeal', 0):.1%}")
+                    st.metric("Memory Encoding", f"{enhanced.get('memory_encoding_strength', 0):.1%}")
+                
+                # Cognitive load if available
+                if 'cognitive_load' in results:
+                    cog_load = results['cognitive_load']
+                    load_level = cog_load.get('adjusted_cognitive_load', 0)
+                    load_category = cog_load.get('load_category', 'unknown')
+                    st.metric("Cognitive Load", f"{load_level:.1%} ({load_category})")
+                
+                # Visualization
+                if 'environment_analysis' in results or 'enhanced_predictions' in results:
+                    from environmental_simulation_complete import create_environmental_visualization
+                    fig = create_environmental_visualization(results)
+                    st.plotly_chart(fig, use_container_width=True, key="comprehensive_env_viz")
+            else:
+                st.info("Run a comprehensive simulation to see detailed results")
+    
+    # Automotive Neuromarketing Suite
+    with env_tab2:
+        st.markdown("### 🚗 Automotive Neuromarketing Suite")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### Vehicle Analysis")
+            automotive_component = st.selectbox(
+                "Analysis Component:",
+                ["exterior_design", "interior_experience", "scent_marketing", "test_drive_simulation"],
+                format_func=lambda x: {
+                    "exterior_design": "🎨 Exterior Design Assessment",
+                    "interior_experience": "🪑 Interior Experience",
+                    "scent_marketing": "👃 Scent Marketing",
+                    "test_drive_simulation": "🏎️ Test Drive Simulation"
+                }[x]
+            )
+            
+            vehicle_brand = st.text_input("Vehicle Brand:", value="Premium Auto")
+            vehicle_model = st.text_input("Vehicle Model:", value="Luxury SUV")
+            target_demographic = st.selectbox("Target Demographic:", 
+                ["luxury_buyers", "family_oriented", "eco_conscious", "performance_enthusiasts"])
+            
+            vehicle_data = {
+                "brand": vehicle_brand,
+                "model": vehicle_model,
+                "target_demographic": target_demographic,
+                "price_range": st.selectbox("Price Range:", ["economy", "mid_range", "luxury", "ultra_luxury"])
+            }
+            
+            if st.button("🔍 Analyze Automotive Component", type="primary"):
+                with st.spinner("Running automotive neuromarketing analysis..."):
+                    env_sim = st.session_state.environmental_simulation
+                    automotive_results = env_sim.run_automotive_analysis(automotive_component, vehicle_data)
+                    st.session_state.environmental_data['automotive_analysis'] = automotive_results
+                    st.success("✅ Automotive analysis completed!")
+        
+        with col2:
+            st.markdown("#### Analysis Results")
+            
+            if 'automotive_analysis' in st.session_state.environmental_data:
+                auto_results = st.session_state.environmental_data['automotive_analysis']
+                
+                if 'analysis_results' in auto_results:
+                    analysis = auto_results['analysis_results']
+                    for point, data in analysis.items():
+                        st.metric(point.replace('_', ' ').title(), f"{data.get('score', 0):.1%}")
+                
+                if 'market_insights' in auto_results:
+                    insights = auto_results['market_insights']
+                    st.markdown("#### Market Insights")
+                    st.metric("Target Appeal", f"{insights.get('target_demographic_appeal', 0):.1%}")
+                    st.metric("Competitive Advantage", f"{insights.get('competitive_advantage', 0):.1%}")
+                    st.metric("Purchase Intent Impact", f"{insights.get('purchase_intent_impact', 0):.1%}")
+                
+                # Automotive visualization
+                if auto_results:
+                    from environmental_simulation_complete import create_automotive_dashboard
+                    fig = create_automotive_dashboard(auto_results)
+                    st.plotly_chart(fig, use_container_width=True, key="automotive_dashboard")
+            else:
+                st.info("Run automotive analysis to see results")
+    
+    # Mobile Recording System
+    with env_tab3:
+        st.markdown("### 📱 Mobile Walkthrough Recording System")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### Recording Configuration")
+            recording_type = st.selectbox(
+                "Recording Type:",
+                ["smartphone_integration", "gps_path_tracking", "voice_commentary", "environmental_tagging"],
+                format_func=lambda x: {
+                    "smartphone_integration": "📱 Smartphone Integration",
+                    "gps_path_tracking": "🗺️ GPS Path Tracking",
+                    "voice_commentary": "🎤 Voice Commentary",
+                    "environmental_tagging": "🏷️ Environmental Tagging"
+                }[x]
+            )
+            
+            recording_duration = st.slider("Recording Duration (minutes)", 1, 30, 10)
+            include_biometrics = st.checkbox("Include Biometric Data", True)
+            real_time_analysis = st.checkbox("Real-Time Neural Analysis", True)
+            
+            session_data = {
+                "duration": recording_duration,
+                "include_biometrics": include_biometrics,
+                "real_time_analysis": real_time_analysis,
+                "environment_type": st.selectbox("Environment Type:", 
+                    ["retail", "hospitality", "healthcare", "transportation"])
+            }
+            
+            if st.button("🎬 Start Mobile Recording", type="primary"):
+                with st.spinner("Initializing mobile recording system..."):
+                    env_sim = st.session_state.environmental_simulation
+                    recording_results = env_sim.record_mobile_walkthrough(recording_type, session_data)
+                    st.session_state.environmental_data['mobile_recording'] = recording_results
+                    st.success("✅ Mobile recording session completed!")
+        
+        with col2:
+            st.markdown("#### Recording Analysis")
+            
+            if 'mobile_recording' in st.session_state.environmental_data:
+                recording = st.session_state.environmental_data['mobile_recording']
+                
+                if 'recording_analysis' in recording:
+                    analysis = recording['recording_analysis']
+                    for capability, data in analysis.items():
+                        st.metric(capability.replace('_', ' ').title(), 
+                                f"{data.get('data_quality', 0):.1%} quality")
+                
+                if 'insights' in recording:
+                    insights = recording['insights']
+                    st.markdown("#### Journey Insights")
+                    st.metric("Journey Efficiency", f"{insights.get('journey_efficiency', 0):.1%}")
+                    st.metric("Decision Points", insights.get('decision_points_identified', 0))
+                    st.metric("Optimization Opportunities", insights.get('optimization_opportunities', 0))
+                
+                # Display recommendations
+                if 'recommendations' in recording:
+                    st.markdown("#### Recommendations")
+                    for rec in recording['recommendations'][:3]:  # Show top 3
+                        st.write(f"• **{rec.get('category', '').title()}**: {rec.get('recommendation', '')}")
+            else:
+                st.info("Start mobile recording to see analysis")
+    
+    # Multi-Sensory Integration
+    with env_tab4:
+        st.markdown("### 👁️ Multi-Sensory Integration Analysis")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### Sensory Configuration")
+            
+            # Sensory channel selection
+            st.markdown("##### Active Sensory Channels")
+            visual_enabled = st.checkbox("👁️ Visual Processing", True)
+            audio_enabled = st.checkbox("👂 Auditory Processing", True) 
+            tactile_enabled = st.checkbox("✋ Tactile Sensation", True)
+            olfactory_enabled = st.checkbox("👃 Olfactory Response", False)
+            
+            # Cultural sensitivity settings
+            cultural_adaptation = st.selectbox("Cultural Adaptation:", 
+                ["neutral", "african_ubuntu", "western_individualist", "asian_collectivist"])
+            
+            # Biometric integration
+            st.markdown("##### Biometric Monitoring")
+            heart_rate = st.checkbox("❤️ Heart Rate Variability", True)
+            skin_conductance = st.checkbox("⚡ Galvanic Skin Response", True)
+            eye_tracking = st.checkbox("👀 Eye Tracking & Pupil Dilation", True)
+            facial_coding = st.checkbox("😊 Facial Expression Analysis", False)
+            
+            multisensory_config = {
+                "sensory_channels": {
+                    "visual": visual_enabled,
+                    "audio": audio_enabled, 
+                    "tactile": tactile_enabled,
+                    "olfactory": olfactory_enabled
+                },
+                "cultural_adaptation": cultural_adaptation,
+                "biometric_monitoring": {
+                    "heart_rate": heart_rate,
+                    "skin_conductance": skin_conductance,
+                    "eye_tracking": eye_tracking,
+                    "facial_coding": facial_coding
+                }
+            }
+            
+            if st.button("🧠 Run Multi-Sensory Analysis", type="primary"):
+                with st.spinner("Analyzing multi-sensory integration patterns..."):
+                    # Simulate multi-sensory analysis using environmental simulation
+                    env_sim = st.session_state.environmental_simulation
+                    
+                    # Create mock environmental simulation for multi-sensory analysis
+                    multisensory_results = env_sim._analyze_multisensory("retail_store", multisensory_config)
+                    
+                    # Add cultural factors
+                    cultural_results = env_sim._analyze_cultural_factors("retail_store", multisensory_config)
+                    
+                    combined_results = {
+                        "multisensory_analysis": multisensory_results,
+                        "cultural_analysis": cultural_results,
+                        "configuration": multisensory_config,
+                        "timestamp": datetime.now().isoformat()
+                    }
+                    
+                    st.session_state.environmental_data['multisensory_analysis'] = combined_results
+                    st.success("✅ Multi-sensory integration analysis completed!")
+        
+        with col2:
+            st.markdown("#### Integration Results")
+            
+            if 'multisensory_analysis' in st.session_state.environmental_data:
+                multi_results = st.session_state.environmental_data['multisensory_analysis']
+                
+                if 'multisensory_analysis' in multi_results:
+                    sensory_data = multi_results['multisensory_analysis']
+                    
+                    # Sensory channel analysis
+                    if 'sensory_channels' in sensory_data:
+                        st.markdown("#### Sensory Channel Performance")
+                        channels = sensory_data['sensory_channels']
+                        
+                        sensory_df = pd.DataFrame([
+                            {
+                                'Channel': channel.title(),
+                                'Intensity': data.get('intensity', 0),
+                                'Preference': data.get('preference', 0),
+                                'Attention': data.get('attention_capture', 0)
+                            }
+                            for channel, data in channels.items()
+                        ])
+                        
+                        fig = px.radar(
+                            sensory_df, 
+                            r='Intensity', 
+                            theta='Channel',
+                            title="Sensory Channel Analysis"
+                        )
+                        st.plotly_chart(fig, use_container_width=True, key="sensory_radar")
+                    
+                    # Overall integration metrics
+                    st.markdown("#### Integration Metrics")
+                    st.metric("Cross-Modal Coherence", f"{sensory_data.get('cross_modal_coherence', 0):.1%}")
+                    st.metric("Sensory Overload Risk", f"{sensory_data.get('sensory_overload_risk', 0):.1%}")
+                    st.metric("Optimal Balance", f"{sensory_data.get('optimal_intensity_balance', 0):.1%}")
+                
+                # Cultural adaptation results
+                if 'cultural_analysis' in multi_results:
+                    cultural_data = multi_results['cultural_analysis']
+                    st.markdown("#### Cultural Adaptation")
+                    
+                    if 'regional_analysis' in cultural_data:
+                        # Show top 3 regional preferences
+                        regions = list(cultural_data['regional_analysis'].items())[:3]
+                        for region, data in regions:
+                            pref = data.get('preference_alignment', 0)
+                            st.metric(f"{region.replace('_', ' ')}", f"{pref:.1%}")
+            else:
+                st.info("Run multi-sensory analysis to see integration results")
 
 # Tab 7: Reports & Export (Enhanced Professional Reports)
 with tab7:
@@ -993,71 +1280,464 @@ with tab7:
         else:
             st.info("Generate a report to see preview")
 
-# Tab 8: NeuroInsight-Africa Platform (Existing Advanced Platform)
+# Tab 8: NeuroInsight-Africa Complete Platform (ENHANCED - All 6 Advanced Features)
 with tab8:
-    st.markdown('<div class="tab-header"><h2>🧠 NeuroInsight-Africa Platform</h2><p>Advanced neuromarketing platform with cultural adaptation for African markets</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="tab-header"><h2>🧠 NeuroInsight-Africa Complete Platform</h2><p>Comprehensive platform with 6 advanced features: Neurodata Simulation, Global Research, Neurotechnologies, ERI/NEC Analysis, Digital Brain Twins, and UX/UI Evaluation</p></div>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    # Create tabs for the 6 advanced features
+    africa_tab1, africa_tab2, africa_tab3, africa_tab4, africa_tab5, africa_tab6 = st.tabs([
+        "🔬 Advanced Neurodata", 
+        "🌍 Global Research", 
+        "🚀 Neurotechnologies",
+        "📊 ERI & NEC Analysis",
+        "🧠 Digital Brain Twins",
+        "🎮 UX/UI Evaluation"
+    ])
     
-    with col1:
-        st.markdown("### Cultural Adaptation Engine")
+    # Feature 1: Advanced Neurodata Simulation
+    with africa_tab1:
+        st.markdown("### 🔬 Advanced Neurodata Simulation with African Cultural Modulation")
         
-        african_region = st.selectbox(
-            "Target Region:",
-            ["West Africa", "East Africa", "Southern Africa", "North Africa", "Pan-African"]
-        )
+        col1, col2 = st.columns(2)
         
-        language_preference = st.selectbox(
-            "Primary Language:",
-            ["English", "French", "Arabic", "Swahili", "Hausa", "Yoruba", "Zulu"]
-        )
+        with col1:
+            st.markdown("#### Ubuntu Philosophy Integration")
+            cultural_context = st.selectbox(
+                "Cultural Context:",
+                ["ubuntu", "collectivist", "traditional_african", "modern_african", "pan_african"],
+                format_func=lambda x: {
+                    "ubuntu": "🤝 Ubuntu Philosophy",
+                    "collectivist": "👥 African Collectivism", 
+                    "traditional_african": "🏛️ Traditional African Values",
+                    "modern_african": "🌟 Modern African Identity",
+                    "pan_african": "🌍 Pan-African Unity"
+                }[x]
+            )
+            
+            stimulus_type = st.selectbox(
+                "Stimulus Type:",
+                ["brand_message", "product_display", "cultural_symbol", "ubuntu_narrative", "community_appeal"]
+            )
+            
+            # Advanced options
+            include_white_noise = st.checkbox("🌊 White Noise EEG Baseline", True)
+            include_dark_matter = st.checkbox("🌌 Dark Matter Neural Patterns", True)
+            ubuntu_modulation = st.checkbox("🤝 Ubuntu Philosophy Modulation", True)
+            
+            if st.button("🧠 Run Advanced African Neurodata Simulation", type="primary"):
+                with st.spinner("Generating culturally-modulated neural patterns..."):
+                    neuro_africa = st.session_state.neuro_africa_features
+                    
+                    # Run advanced neurodata simulation
+                    neuro_results = neuro_africa.run_advanced_neurodata_simulation(
+                        cultural_context=cultural_context,
+                        stimulus_type=stimulus_type
+                    )
+                    
+                    st.session_state.environmental_data['advanced_neurodata'] = neuro_results
+                    st.success("✅ Advanced neurodata simulation with African cultural patterns completed!")
         
-        cultural_factors = {
-            'Collectivism vs Individualism': st.slider("", 0, 100, 75),
-            'High Context Communication': st.slider("", 0, 100, 80),
-            'Respect for Authority': st.slider("", 0, 100, 85),
-            'Ubuntu Philosophy': st.slider("", 0, 100, 90)
-        }
-        
-        st.markdown("### Local Market Insights")
-        market_metrics = {
-            'Mobile Usage': np.random.uniform(0.8, 0.95),
-            'Social Media Penetration': np.random.uniform(0.6, 0.85),
-            'Brand Loyalty': np.random.uniform(0.7, 0.9),
-            'Price Sensitivity': np.random.uniform(0.75, 0.95)
-        }
-        
-        for metric, value in market_metrics.items():
-            st.metric(metric, f"{value:.1%}")
+        with col2:
+            st.markdown("#### Simulation Results")
+            
+            if 'advanced_neurodata' in st.session_state.environmental_data:
+                neuro_data = st.session_state.environmental_data['advanced_neurodata']
+                
+                # Key metrics
+                st.metric("Ubuntu Coherence Index", f"{neuro_data.get('ubuntu_coherence_index', 0):.1%}")
+                st.metric("Cultural Authenticity", f"{neuro_data.get('cultural_authenticity_score', 0):.1%}")
+                st.metric("African Market Relevance", f"{neuro_data.get('market_relevance', 0):.1%}")
+                
+                # Neural pattern visualization
+                if 'african_neural_patterns' in neuro_data:
+                    patterns = neuro_data['african_neural_patterns']
+                    
+                    pattern_df = pd.DataFrame([
+                        {'Pattern': 'Multilingual Activation', 'Strength': patterns.get('multilingual_activation', 0)},
+                        {'Pattern': 'Collectivist Patterns', 'Strength': patterns.get('collectivist_patterns', 0)},
+                        {'Pattern': 'Traditional-Modern Tension', 'Strength': patterns.get('traditional_modern_tension', 0)}
+                    ])
+                    
+                    fig = px.bar(pattern_df, x='Pattern', y='Strength', 
+                               title="African Neural Pattern Analysis")
+                    st.plotly_chart(fig, use_container_width=True, key="african_neural_patterns")
+            else:
+                st.info("Run advanced neurodata simulation to see results")
     
-    with col2:
-        st.markdown("### Cultural Sentiment Analysis")
+    # Feature 2: Global Research Integration
+    with africa_tab2:
+        st.markdown("### 🌍 Global Research Integration with African Market Focus")
         
-        # African cultural sentiment radar
-        cultural_dimensions = {
-            'Ubuntu (Community)': np.random.uniform(0.7, 0.95),
-            'Respect (Dignity)': np.random.uniform(0.8, 0.95),
-            'Spirituality': np.random.uniform(0.6, 0.9),
-            'Family Values': np.random.uniform(0.8, 0.95),
-            'Tradition': np.random.uniform(0.7, 0.9),
-            'Innovation': np.random.uniform(0.5, 0.8)
-        }
+        col1, col2 = st.columns(2)
         
-        fig = go.Figure()
-        fig.add_trace(go.Scatterpolar(
-            r=list(cultural_dimensions.values()),
-            theta=list(cultural_dimensions.keys()),
-            fill='toself',
-            name='Cultural Alignment'
-        ))
-        fig.update_layout(
-            polar=dict(
-                radialaxis=dict(visible=True, range=[0, 1])
-            ),
-            showlegend=False,
-            title="Cultural Sentiment Profile"
-        )
-        st.plotly_chart(fig, use_container_width=True, key="tab8_cultural_sentiment")
+        with col1:
+            st.markdown("#### Multi-Database Research Synthesis")
+            research_query = st.text_input("Research Query:", 
+                placeholder="e.g., African consumer behavior, Ubuntu neuroscience")
+            
+            african_focus = st.checkbox("African Market Focus", True)
+            include_ubuntu = st.checkbox("Include Ubuntu Philosophy Research", True)
+            
+            databases = st.multiselect(
+                "Research Databases:",
+                ["OpenNeuro", "Zenodo", "PubMed", "African Research Portal", "Ubuntu Studies"],
+                default=["OpenNeuro", "PubMed", "African Research Portal"]
+            )
+            
+            if st.button("🔍 Integrate Global Research", type="primary"):
+                with st.spinner("Synthesizing research from multiple databases..."):
+                    neuro_africa = st.session_state.neuro_africa_features
+                    
+                    research_results = neuro_africa.integrate_global_research(
+                        research_query=research_query,
+                        african_focus=african_focus
+                    )
+                    
+                    st.session_state.environmental_data['global_research'] = research_results
+                    st.success("✅ Global research integration with African focus completed!")
+        
+        with col2:
+            st.markdown("#### Research Synthesis Results")
+            
+            if 'global_research' in st.session_state.environmental_data:
+                research_data = st.session_state.environmental_data['global_research']
+                
+                if 'research_results' in research_data:
+                    results = research_data['research_results']
+                    
+                    # Research metrics
+                    st.metric("OpenNeuro Datasets", results['openneuro_results'].get('datasets_found', 0))
+                    st.metric("Zenodo Publications", results['zenodo_results'].get('publications_found', 0))
+                    st.metric("PubMed Studies", results['pubmed_results'].get('studies_found', 0))
+                
+                if 'african_market_insights' in research_data:
+                    insights = research_data['african_market_insights']
+                    
+                    st.markdown("#### African Market Applications")
+                    gaps = insights.get('research_gap_analysis', {}).get('gaps_identified', 0)
+                    st.metric("Research Gaps Identified", gaps)
+                    
+                    ubuntu_alignment = insights.get('ubuntu_principle_alignment', {}).get('ubuntu_alignment', 0)
+                    st.metric("Ubuntu Alignment Score", f"{ubuntu_alignment:.1%}")
+            else:
+                st.info("Run global research integration to see synthesis results")
+    
+    # Feature 3: Cutting-Edge Neurotechnologies
+    with africa_tab3:
+        st.markdown("### 🚀 Cutting-Edge Neurotechnologies with Ubuntu Philosophy")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### Neurotechnology Deployment")
+            technology_type = st.selectbox(
+                "Technology Type:",
+                ["neurofeedback_systems", "tms_integration", "vr_integration"],
+                format_func=lambda x: {
+                    "neurofeedback_systems": "🧠 Neurofeedback Systems",
+                    "tms_integration": "⚡ TMS Integration",
+                    "vr_integration": "🥽 VR Integration"
+                }[x]
+            )
+            
+            ubuntu_integration = st.checkbox("🤝 Ubuntu Philosophy Integration", True)
+            community_based = st.checkbox("👥 Community-Based Protocols", True)
+            cultural_optimization = st.checkbox("🌍 African Cultural Optimization", True)
+            
+            if st.button("🚀 Deploy Neurotechnology", type="primary"):
+                with st.spinner("Deploying neurotechnology with Ubuntu integration..."):
+                    neuro_africa = st.session_state.neuro_africa_features
+                    
+                    deployment_results = neuro_africa.deploy_cutting_edge_neurotechnologies(
+                        technology_type=technology_type,
+                        ubuntu_integration=ubuntu_integration
+                    )
+                    
+                    st.session_state.environmental_data['neurotechnology'] = deployment_results
+                    st.success("✅ Neurotechnology deployed with Ubuntu philosophy integration!")
+        
+        with col2:
+            st.markdown("#### Deployment Results")
+            
+            if 'neurotechnology' in st.session_state.environmental_data:
+                tech_data = st.session_state.environmental_data['neurotechnology']
+                
+                st.metric("Ubuntu Integration Level", 
+                         "Enabled" if tech_data.get('ubuntu_integration') else "Disabled")
+                st.metric("Community Acceptance", f"{tech_data.get('community_acceptance', 0):.1%}")
+                st.metric("Ethical Compliance", f"{tech_data.get('ethical_compliance', 0):.1%}")
+                
+                # Technology-specific metrics
+                tech_type = tech_data.get('technology_type', '')
+                st.markdown(f"#### {tech_type.replace('_', ' ').title()} Metrics")
+                
+                if 'deployment_config' in tech_data:
+                    config = tech_data['deployment_config']
+                    for key, value in list(config.items())[:3]:  # Show first 3 items
+                        if isinstance(value, dict):
+                            st.write(f"**{key.replace('_', ' ').title()}**: {len(value)} components")
+                        else:
+                            st.write(f"**{key.replace('_', ' ').title()}**: {value}")
+            else:
+                st.info("Deploy neurotechnology to see results")
+    
+    # Feature 4: ERI & NEC Analysis
+    with africa_tab4:
+        st.markdown("### 📊 ERI & NEC Analysis with Cultural Weights")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### Cultural Analysis Configuration")
+            
+            stimulus_text = st.text_area("Marketing Stimulus:", 
+                placeholder="Enter brand message, advertisement, or product description...")
+            
+            cultural_context = st.selectbox(
+                "Cultural Context:",
+                ["ubuntu", "west_african", "east_african", "southern_african", "pan_african"]
+            )
+            
+            # Stimulus characteristics
+            st.markdown("#### Stimulus Characteristics")
+            community_focus = st.slider("Community Focus", 0, 100, 70)
+            individual_appeal = st.slider("Individual Appeal", 0, 100, 30)
+            traditional_values = st.slider("Traditional Values", 0, 100, 60)
+            modern_innovation = st.slider("Modern Innovation", 0, 100, 40)
+            
+            stimulus_data = {
+                "text": stimulus_text,
+                "community_focus": community_focus / 100,
+                "individual_appeal": individual_appeal / 100,
+                "traditional_values": traditional_values / 100,
+                "modern_innovation": modern_innovation / 100
+            }
+            
+            if st.button("📊 Calculate ERI & NEC", type="primary"):
+                with st.spinner("Calculating Emotional Resonance Index and Neural Engagement Coefficient..."):
+                    neuro_africa = st.session_state.neuro_africa_features
+                    
+                    eri_nec_results = neuro_africa.calculate_eri_nec_with_cultural_weights(
+                        stimulus_data=stimulus_data,
+                        cultural_context=cultural_context
+                    )
+                    
+                    st.session_state.environmental_data['eri_nec'] = eri_nec_results
+                    st.success("✅ ERI & NEC analysis with cultural weights completed!")
+        
+        with col2:
+            st.markdown("#### Analysis Results")
+            
+            if 'eri_nec' in st.session_state.environmental_data:
+                eri_nec = st.session_state.environmental_data['eri_nec']
+                
+                # ERI Analysis
+                if 'emotional_resonance_index' in eri_nec:
+                    eri_data = eri_nec['emotional_resonance_index']
+                    st.markdown("#### Emotional Resonance Index (ERI)")
+                    st.metric("Base ERI", f"{eri_data.get('base_eri', 0):.1%}")
+                    st.metric("Cultural ERI", f"{eri_data.get('cultural_eri', 0):.1%}")
+                    st.metric("Ubuntu Influence", f"{eri_data.get('ubuntu_influence', 1):.2f}x")
+                
+                # NEC Analysis
+                if 'neural_engagement_coefficient' in eri_nec:
+                    nec_data = eri_nec['neural_engagement_coefficient']
+                    st.markdown("#### Neural Engagement Coefficient (NEC)")
+                    st.metric("Base NEC", f"{nec_data.get('base_nec', 0):.1%}")
+                    st.metric("Cultural NEC", f"{nec_data.get('cultural_nec', 0):.1%}")
+                    st.metric("African Enhancement", f"{nec_data.get('african_pattern_enhancement', 1):.2f}x")
+                
+                # Combined Metrics
+                if 'combined_metrics' in eri_nec:
+                    combined = eri_nec['combined_metrics']
+                    st.markdown("#### Combined Cultural Metrics")
+                    st.metric("Overall Cultural Fit", f"{combined.get('overall_cultural_fit', 0):.1%}")
+                    st.metric("Ubuntu Authenticity", f"{combined.get('ubuntu_authenticity', 0):.1%}")
+                    st.metric("African Market Potential", f"{combined.get('market_potential_africa', 0):.1%}")
+            else:
+                st.info("Run ERI & NEC analysis to see cultural metrics")
+    
+    # Feature 5: Digital Brain Twins
+    with africa_tab5:
+        st.markdown("### 🧠 Digital Brain Twins - Personalized African Market Consumer Models")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### Consumer Profile Configuration")
+            
+            # Demographics
+            age_group = st.selectbox("Age Group:", ["18-25", "26-35", "36-45", "46-55", "55+"])
+            income_level = st.selectbox("Income Level:", ["low", "middle", "upper_middle", "high"])
+            education = st.selectbox("Education:", ["primary", "secondary", "tertiary", "postgraduate"])
+            
+            # Cultural factors
+            st.markdown("#### Cultural Characteristics")
+            ubuntu_alignment = st.slider("Ubuntu Philosophy Alignment", 0, 100, 80)
+            collectivism_score = st.slider("Collectivism Score", 0, 100, 75)
+            traditional_modern_balance = st.slider("Traditional vs Modern", 0, 100, 60)  # 0=traditional, 100=modern
+            
+            # Language and location
+            primary_language = st.selectbox("Primary Language:", 
+                ["English", "Swahili", "Hausa", "Yoruba", "Zulu", "Amharic", "French", "Arabic"])
+            region = st.selectbox("Region:", 
+                ["West Africa", "East Africa", "Southern Africa", "North Africa", "Central Africa"])
+            
+            consumer_profile = {
+                "demographics": {
+                    "age_group": age_group,
+                    "income_level": income_level,
+                    "education": education
+                },
+                "cultural_characteristics": {
+                    "ubuntu_alignment": ubuntu_alignment / 100,
+                    "collectivism_score": collectivism_score / 100,
+                    "traditional_modern_balance": traditional_modern_balance / 100
+                },
+                "language_region": {
+                    "primary_language": primary_language,
+                    "region": region
+                }
+            }
+            
+            if st.button("🧠 Create Digital Brain Twin", type="primary"):
+                with st.spinner("Creating personalized African market consumer model..."):
+                    neuro_africa = st.session_state.neuro_africa_features
+                    
+                    brain_twin_results = neuro_africa.create_digital_brain_twins_african(
+                        consumer_profile=consumer_profile
+                    )
+                    
+                    st.session_state.environmental_data['brain_twin'] = brain_twin_results
+                    st.success("✅ Digital brain twin for African consumer created!")
+        
+        with col2:
+            st.markdown("#### Brain Twin Analysis")
+            
+            if 'brain_twin' in st.session_state.environmental_data:
+                twin_data = st.session_state.environmental_data['brain_twin']
+                
+                # Model quality metrics
+                st.metric("Model Accuracy", f"{twin_data.get('model_accuracy', 0):.1%}")
+                st.metric("Cultural Authenticity", f"{twin_data.get('cultural_authenticity', 0):.1%}")
+                st.metric("Ubuntu Alignment Score", f"{twin_data.get('ubuntu_alignment_score', 0):.1%}")
+                
+                # Behavior predictions
+                if 'behavior_predictions' in twin_data:
+                    predictions = twin_data['behavior_predictions']
+                    
+                    st.markdown("#### Behavioral Predictions")
+                    for pred_type, pred_data in list(predictions.items())[:4]:  # Show first 4
+                        if isinstance(pred_data, dict) and 'probability' in pred_data:
+                            st.metric(pred_type.replace('_', ' ').title(), 
+                                    f"{pred_data['probability']:.1%}")
+                        elif isinstance(pred_data, (int, float)):
+                            st.metric(pred_type.replace('_', ' ').title(), f"{pred_data:.1%}")
+                
+                # Ubuntu characteristics if available
+                if 'digital_brain_twin' in twin_data and 'ubuntu_characteristics' in twin_data['digital_brain_twin']:
+                    ubuntu_chars = twin_data['digital_brain_twin']['ubuntu_characteristics']
+                    
+                    st.markdown("#### Ubuntu Characteristics")
+                    ubuntu_df = pd.DataFrame([
+                        {'Characteristic': char.replace('_', ' ').title(), 'Strength': strength}
+                        for char, strength in list(ubuntu_chars.items())[:4]
+                        if isinstance(strength, (int, float))
+                    ])
+                    
+                    if not ubuntu_df.empty:
+                        fig = px.bar(ubuntu_df, x='Characteristic', y='Strength',
+                                   title="Ubuntu Philosophy Characteristics")
+                        st.plotly_chart(fig, use_container_width=True, key="ubuntu_characteristics")
+            else:
+                st.info("Create digital brain twin to see analysis")
+    
+    # Feature 6: Enhanced UX/UI Evaluation
+    with africa_tab6:
+        st.markdown("### 🎮 Enhanced UX/UI Evaluation with Cultural Adaptation")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### Interface Evaluation Setup")
+            
+            evaluation_type = st.selectbox(
+                "Interface Type:",
+                ["mobile_app", "website", "gaming_interface", "ecommerce_platform"],
+                format_func=lambda x: {
+                    "mobile_app": "📱 Mobile Application",
+                    "website": "🌐 Website",
+                    "gaming_interface": "🎮 Gaming Interface",
+                    "ecommerce_platform": "🛒 E-commerce Platform"
+                }[x]
+            )
+            
+            # Interface characteristics
+            st.markdown("#### Interface Characteristics")
+            ubuntu_design_elements = st.checkbox("🤝 Ubuntu Design Principles", True)
+            african_color_scheme = st.checkbox("🎨 African Color Psychology", True)
+            multilingual_support = st.checkbox("🗣️ Multilingual Support", True)
+            community_features = st.checkbox("👥 Community Features", True)
+            
+            # Cultural adaptation level
+            cultural_adaptation_level = st.slider("Cultural Adaptation Level", 0, 100, 75)
+            
+            interface_data = {
+                "type": evaluation_type,
+                "ubuntu_elements": ubuntu_design_elements,
+                "african_colors": african_color_scheme,
+                "multilingual": multilingual_support,
+                "community_features": community_features,
+                "cultural_adaptation": cultural_adaptation_level / 100
+            }
+            
+            if st.button("🎮 Evaluate UX/UI", type="primary"):
+                with st.spinner("Evaluating interface with cultural adaptation analysis..."):
+                    neuro_africa = st.session_state.neuro_africa_features
+                    
+                    ui_results = neuro_africa.enhanced_ux_ui_evaluation_cultural(
+                        interface_data=interface_data,
+                        evaluation_type=evaluation_type
+                    )
+                    
+                    st.session_state.environmental_data['ui_evaluation'] = ui_results
+                    st.success("✅ UX/UI evaluation with cultural adaptation completed!")
+        
+        with col2:
+            st.markdown("#### Evaluation Results")
+            
+            if 'ui_evaluation' in st.session_state.environmental_data:
+                ui_data = st.session_state.environmental_data['ui_evaluation']
+                
+                # Base evaluation metrics
+                if 'base_evaluation' in ui_data:
+                    base_eval = ui_data['base_evaluation']
+                    st.markdown("#### Base UX/UI Metrics")
+                    st.metric("Usability Score", f"{base_eval.get('usability_score', 0):.1%}")
+                    st.metric("Accessibility Score", f"{base_eval.get('accessibility_score', 0):.1%}")
+                    st.metric("Aesthetic Appeal", f"{base_eval.get('aesthetic_appeal', 0):.1%}")
+                
+                # Cultural evaluation
+                if 'cultural_evaluation' in ui_data:
+                    cultural_eval = ui_data['cultural_evaluation']
+                    st.markdown("#### Cultural Adaptation")
+                    st.metric("Ubuntu Design Principles", f"{cultural_eval.get('ubuntu_design_principles', 0):.1%}")
+                    st.metric("African Color Psychology", f"{cultural_eval.get('african_color_psychology', 0):.1%}")
+                    st.metric("Multilingual Support", f"{cultural_eval.get('multilingual_support', 0):.1%}")
+                
+                # Overall cultural fit
+                overall_fit = ui_data.get('overall_cultural_fit_score', 0)
+                st.metric("Overall Cultural Fit", f"{overall_fit:.1%}")
+                
+                # Recommendations preview
+                if 'recommendations' in ui_data:
+                    recs = ui_data['recommendations']
+                    st.markdown("#### Top Recommendations")
+                    for rec_type, rec_list in list(recs.items())[:2]:  # Show first 2 categories
+                        if rec_list and len(rec_list) > 0:
+                            st.write(f"**{rec_type.replace('_', ' ').title()}**: {rec_list[0]}")
+            else:
+                st.info("Run UX/UI evaluation to see cultural adaptation analysis")
 
 # Tab 9: Deep Research Engine (NEW - PR #3 Research Module)
 with tab9:
