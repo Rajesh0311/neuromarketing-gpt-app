@@ -173,10 +173,28 @@ with tab1:
         if 'sentiment' in st.session_state.analysis_results:
             results = st.session_state.analysis_results['sentiment']
             
-            st.metric("Overall Sentiment", results['overall_sentiment'], f"{results['confidence']:.1%} confidence")
+            st.metric("Overall Sentiment", results['basic_sentiment']['polarity'], f"{results['basic_sentiment']['confidence']:.1%} confidence")
+            
+            # Sentiment gauge chart
+            gauge_fig = go.Figure(go.Indicator(
+                mode = "gauge+number",
+                value = results['basic_sentiment']['scores']['positive'] * 100,
+                domain = {'x': [0, 1], 'y': [0, 1]},
+                title = {'text': "Sentiment Gauge"},
+                gauge = {
+                    'axis': {'range': [None, 100]},
+                    'bar': {'color': "darkgreen"},
+                    'steps': [
+                        {'range': [0, 30], 'color': "lightgray"},
+                        {'range': [30, 70], 'color': "yellow"}],
+                    'threshold': {
+                        'line': {'color': "red", 'width': 4},
+                        'thickness': 0.75,
+                        'value': 90}}))
+            st.plotly_chart(gauge_fig, use_container_width=True, key="tab1_sentiment_gauge")
             
             # Emotion radar chart
-            emotions = results['emotions']
+            emotions = results['emotional_profile']
             fig = go.Figure()
             fig.add_trace(go.Scatterpolar(
                 r=list(emotions.values()),
@@ -192,6 +210,57 @@ with tab1:
                 height=300
             )
             st.plotly_chart(fig, use_container_width=True, key="tab1_emotion_radar")
+            
+            # Confidence heatmap
+            confidence_data = np.array([
+                [results['basic_sentiment']['confidence'], results['basic_sentiment']['scores']['positive']],
+                [results['basic_sentiment']['scores']['negative'], results['basic_sentiment']['scores']['neutral']]
+            ])
+            heatmap_fig = px.imshow(
+                confidence_data,
+                labels=dict(x="Metrics", y="Categories", color="Confidence"),
+                x=['Confidence', 'Positive Score'],
+                y=['Sentiment', 'Emotion'],
+                title="Confidence Heatmap"
+            )
+            st.plotly_chart(heatmap_fig, use_container_width=True, key="tab1_confidence_heatmap")
+            
+        # Sample demonstration charts (always visible)
+        else:
+            st.info("Enter text above and click 'Analyze Sentiment' to see comprehensive analysis results.")
+            
+            # Sample gauge chart
+            sample_gauge_fig = go.Figure(go.Indicator(
+                mode = "gauge+number",
+                value = 75,
+                domain = {'x': [0, 1], 'y': [0, 1]},
+                title = {'text': "Sample Sentiment Gauge"},
+                gauge = {
+                    'axis': {'range': [None, 100]},
+                    'bar': {'color': "darkblue"},
+                    'steps': [
+                        {'range': [0, 30], 'color': "lightgray"},
+                        {'range': [30, 70], 'color': "yellow"}]}))
+            st.plotly_chart(sample_gauge_fig, use_container_width=True, key="tab1_sample_gauge")
+            
+            # Sample radar chart
+            sample_emotions = {'joy': 0.7, 'trust': 0.6, 'fear': 0.2, 'surprise': 0.5, 'sadness': 0.3, 'disgust': 0.1, 'anger': 0.2, 'anticipation': 0.8}
+            sample_radar_fig = go.Figure()
+            sample_radar_fig.add_trace(go.Scatterpolar(
+                r=list(sample_emotions.values()),
+                theta=list(sample_emotions.keys()),
+                fill='toself',
+                name='Sample Emotions'
+            ))
+            sample_radar_fig.update_layout(
+                polar=dict(
+                    radialaxis=dict(visible=True, range=[0, 1])
+                ),
+                showlegend=False,
+                height=300,
+                title="Sample Emotion Profile"
+            )
+            st.plotly_chart(sample_radar_fig, use_container_width=True, key="tab1_sample_radar")
 
 # Tab 2: Enhanced South African Sarcasm & Irony Detection
 with tab2:
@@ -385,6 +454,55 @@ with tab2:
                 st.markdown(f"**Overall Market Suitability**: {market_score:.1%}")
                 st.markdown(f"**Recommendation**: {market_recommendation}")
                 
+                # Additional Cultural Visualizations
+                st.markdown("### 📈 Extended Cultural Analysis")
+                col_ext1, col_ext2, col_ext3 = st.columns(3)
+                
+                with col_ext1:
+                    # Ubuntu Gauge Chart
+                    ubuntu_gauge_fig = go.Figure(go.Indicator(
+                        mode = "gauge+number",
+                        value = cultural_result.ubuntu_compatibility * 100,
+                        domain = {'x': [0, 1], 'y': [0, 1]},
+                        title = {'text': "Ubuntu Compatibility"},
+                        gauge = {
+                            'axis': {'range': [None, 100]},
+                            'bar': {'color': "orange"},
+                            'steps': [
+                                {'range': [0, 40], 'color': "lightgray"},
+                                {'range': [40, 70], 'color': "yellow"},
+                                {'range': [70, 100], 'color': "lightgreen"}]}))
+                    st.plotly_chart(ubuntu_gauge_fig, use_container_width=True, key="tab2_ubuntu_gauge")
+                
+                with col_ext2:
+                    # Language Meter Chart
+                    language_meter_fig = go.Figure(go.Indicator(
+                        mode = "number+delta",
+                        value = cultural_result.language_respect_index * 100,
+                        delta = {"reference": 75},
+                        title = {"text": "Language Respect Meter"},
+                        domain = {'x': [0, 1], 'y': [0, 1]}))
+                    st.plotly_chart(language_meter_fig, use_container_width=True, key="tab2_language_meter")
+                
+                with col_ext3:
+                    # Regional Chart
+                    regional_data = {
+                        'Current Region': cultural_result.regional_appropriateness,
+                        'Cross-Regional': cultural_result.cross_cultural_sensitivity,
+                        'Urban Adaptation': 0.8 if urban_rural == 'Metropolitan' else 0.6,
+                        'Rural Adaptation': 0.6 if urban_rural == 'Rural' else 0.4
+                    }
+                    regional_chart_fig = px.bar(
+                        x=list(regional_data.values()),
+                        y=list(regional_data.keys()),
+                        orientation='h',
+                        title="Regional Appropriateness",
+                        color=list(regional_data.values()),
+                        color_continuous_scale="Viridis"
+                    )
+                    regional_chart_fig.update_layout(showlegend=False, height=300)
+                    st.plotly_chart(regional_chart_fig, use_container_width=True, key="tab2_regional_chart")
+                
                 # Context-specific insights
                 context_insights = f"""
                 **Target Audience Profile:**
@@ -499,7 +617,7 @@ with tab3:
             eeg_data = np.sin(time_points * 2) + 0.5 * np.sin(time_points * 8) + 0.3 * np.random.randn(len(time_points))
             
             fig = px.line(x=time_points, y=eeg_data, title="Live EEG Signal")
-            chart_placeholder.plotly_chart(fig, use_container_width=True)
+            chart_placeholder.plotly_chart(fig, use_container_width=True, key="tab3_live_eeg")
 
 # Tab 4: Professional Visuals (Enhanced Export from PR #4)
 with tab4:
