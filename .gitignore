@@ -156,4 +156,4 @@ Desktop.ini
 data/raw/
 data/processed/
 models/
-logs/
+logs/"__pycache__/" 
