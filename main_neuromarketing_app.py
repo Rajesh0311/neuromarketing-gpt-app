@@ -26,6 +26,7 @@ from environmental_simulation_complete import EnvironmentalSimulationComplete
 from neuroinsight_africa_complete import AdvancedNeuroAfricaFeatures
 from export_module import ProfessionalExporter
 from south_african_cultural_analyzer import SouthAfricanCulturalAnalyzer, SAulturalContext, get_sa_cultural_options
+from enhanced_neural_simulation import EnhancedNeuralSimulation
 
 # Page configuration
 st.set_page_config(
@@ -109,6 +110,8 @@ if 'exporter' not in st.session_state:
     st.session_state.exporter = ProfessionalExporter()
 if 'sa_cultural_analyzer' not in st.session_state:
     st.session_state.sa_cultural_analyzer = SouthAfricanCulturalAnalyzer()
+if 'enhanced_neural_simulation' not in st.session_state:
+    st.session_state.enhanced_neural_simulation = EnhancedNeuralSimulation()
 
 # Main application header
 st.markdown("""
@@ -123,7 +126,7 @@ st.markdown("""
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
     "📊 Advanced Sentiment Analysis",  # Enhanced from PR #4
     "🎭 Sarcasm & Irony Detection",    # Existing + Enhanced
-    "🔬 Basic Monitoring",             # Existing Neural Monitoring
+    "🔬 Neural Monitoring",            # Enhanced Neural Monitoring with sub-tabs
     "🎨 Professional Visuals",         # Enhanced Export from PR #4
     "📁 Media Input Hub",              # NEW - PR #4 Media Capabilities
     "🏪 Environmental Simulation",     # NEW - PR #5 Environmental Features
@@ -585,47 +588,545 @@ with tab2:
         - Excluding other cultural groups
         """)
 
-# Tab 3: Basic Monitoring (Neural Monitoring)
+# Tab 3: Enhanced Neural Monitoring (Enhanced with sub-tabs and advanced features)
 with tab3:
-    st.markdown('<div class="tab-header"><h2>🔬 Basic Neural Monitoring</h2><p>Real-time neural pattern analysis and monitoring</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="tab-header"><h2>🔬 Enhanced Neural Monitoring</h2><p>Advanced neural pattern analysis with real-time EEG processing, dark matter patterns, cultural modulation, and interactive dashboard</p></div>', unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns(3)
+    # Create sub-tabs for enhanced neural monitoring features
+    basic_tab, eeg_tab, dark_matter_tab, cultural_tab, dashboard_tab = st.tabs([
+        "📊 Basic Monitoring",           # Original basic monitoring code (unchanged)
+        "🌊 Real-time EEG Processing",   # Advanced EEG processing
+        "🌌 Dark Matter Patterns",       # Dark matter neural simulation
+        "🌍 Cultural Modulation",        # Cultural adaptation
+        "📈 Interactive Dashboard"       # Comprehensive visualization
+    ])
     
-    with col1:
-        st.markdown("### EEG Device Connection")
-        device_options = ["NeuroSky", "Emotiv EPOC", "OpenBCI", "Muse", "Simulation Mode"]
-        selected_device = st.selectbox("Select EEG Device:", device_options)
+    # Sub-tab 1: Basic Monitoring (Existing code moved here unchanged)
+    with basic_tab:
+        st.markdown("### Basic Neural Monitoring")
+        st.markdown("*Original basic monitoring functionality preserved unchanged*")
         
-        connection_status = st.button("🔗 Connect Device")
-        if connection_status:
-            st.success(f"✅ Connected to {selected_device}")
-    
-    with col2:
-        st.markdown("### Frequency Bands")
-        frequency_bands = {
-            'Delta (0.5-4 Hz)': np.random.uniform(20, 40),
-            'Theta (4-8 Hz)': np.random.uniform(15, 35),
-            'Alpha (8-13 Hz)': np.random.uniform(25, 45),
-            'Beta (13-30 Hz)': np.random.uniform(30, 50),
-            'Gamma (30-100 Hz)': np.random.uniform(10, 25)
-        }
+        col1, col2, col3 = st.columns(3)
         
-        for band, value in frequency_bands.items():
-            st.metric(band, f"{value:.1f} μV")
-    
-    with col3:
-        st.markdown("### Real-time Monitoring")
-        
-        # Generate real-time data simulation
-        if st.checkbox("Start Monitoring"):
-            chart_placeholder = st.empty()
+        with col1:
+            st.markdown("### EEG Device Connection")
+            device_options = ["NeuroSky", "Emotiv EPOC", "OpenBCI", "Muse", "Simulation Mode"]
+            selected_device = st.selectbox("Select EEG Device:", device_options)
             
-            # Simulate real-time EEG data
-            time_points = np.arange(0, 10, 0.1)
-            eeg_data = np.sin(time_points * 2) + 0.5 * np.sin(time_points * 8) + 0.3 * np.random.randn(len(time_points))
+            connection_status = st.button("🔗 Connect Device")
+            if connection_status:
+                st.success(f"✅ Connected to {selected_device}")
+        
+        with col2:
+            st.markdown("### Frequency Bands")
+            frequency_bands = {
+                'Delta (0.5-4 Hz)': np.random.uniform(20, 40),
+                'Theta (4-8 Hz)': np.random.uniform(15, 35),
+                'Alpha (8-13 Hz)': np.random.uniform(25, 45),
+                'Beta (13-30 Hz)': np.random.uniform(30, 50),
+                'Gamma (30-100 Hz)': np.random.uniform(10, 25)
+            }
             
-            fig = px.line(x=time_points, y=eeg_data, title="Live EEG Signal")
-            chart_placeholder.plotly_chart(fig, use_container_width=True, key="tab3_live_eeg")
+            for band, value in frequency_bands.items():
+                st.metric(band, f"{value:.1f} μV")
+        
+        with col3:
+            st.markdown("### Real-time Monitoring")
+            
+            # Generate real-time data simulation
+            if st.checkbox("Start Monitoring"):
+                chart_placeholder = st.empty()
+                
+                # Simulate real-time EEG data
+                time_points = np.arange(0, 10, 0.1)
+                eeg_data = np.sin(time_points * 2) + 0.5 * np.sin(time_points * 8) + 0.3 * np.random.randn(len(time_points))
+                
+                fig = px.line(x=time_points, y=eeg_data, title="Live EEG Signal")
+                chart_placeholder.plotly_chart(fig, use_container_width=True, key="tab3_basic_live_eeg")
+    
+    # Sub-tab 2: Real-time EEG Processing
+    with eeg_tab:
+        st.markdown("### Advanced Real-time EEG Processing")
+        st.markdown("*Advanced EEG processing with cultural modulation and enhanced filtering*")
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            st.markdown("#### Processing Configuration")
+            
+            # EEG processing parameters
+            duration = st.slider("Recording Duration (seconds)", 5.0, 30.0, 10.0)
+            cultural_context = st.selectbox("Cultural Context:", 
+                ["neutral", "ubuntu", "collectivist", "individualist", "high_context", "low_context"])
+            stimulus_type = st.selectbox("Stimulus Type:", 
+                ["advertisement", "brand_logo", "product_demo", "emotional_content"])
+            
+            # Advanced options
+            st.markdown("#### Advanced Options")
+            apply_filtering = st.checkbox("Advanced Filtering", True)
+            cultural_modulation = st.checkbox("Cultural Modulation", True)
+            real_time_analysis = st.checkbox("Real-time Analysis", True)
+            
+            if st.button("🌊 Start Advanced EEG Processing", type="primary"):
+                with st.spinner("Processing real-time EEG with advanced features..."):
+                    # Get enhanced neural simulation instance
+                    enhanced_neural = st.session_state.enhanced_neural_simulation
+                    
+                    # Process real-time EEG
+                    eeg_results = enhanced_neural.process_real_time_eeg(
+                        duration=duration,
+                        cultural_context=cultural_context,
+                        stimulus_type=stimulus_type
+                    )
+                    
+                    # Store results in session state for this tab
+                    if 'enhanced_neural_results' not in st.session_state:
+                        st.session_state.enhanced_neural_results = {}
+                    st.session_state.enhanced_neural_results['real_time_eeg'] = eeg_results
+                    
+                    st.success("✅ Advanced EEG processing completed!")
+        
+        with col2:
+            st.markdown("#### Processing Results")
+            
+            if 'enhanced_neural_results' in st.session_state and 'real_time_eeg' in st.session_state.enhanced_neural_results:
+                eeg_data = st.session_state.enhanced_neural_results['real_time_eeg']
+                
+                # Display key metrics
+                if 'advanced_metrics' in eeg_data:
+                    metrics = eeg_data['advanced_metrics']
+                    st.metric("Signal Quality", f"{metrics.get('overall_signal_quality', 0):.1%}")
+                    st.metric("Neural Synchronization", f"{metrics.get('global_synchronization', 0):.1%}")
+                    st.metric("Cognitive Load", f"{metrics.get('cognitive_load_index', 0):.1%}")
+                    st.metric("Attention Focus", f"{metrics.get('attention_focus', 0):.1%}")
+                
+                # Cultural analysis
+                if 'cultural_analysis' in eeg_data:
+                    cultural = eeg_data['cultural_analysis']
+                    st.markdown("#### Cultural Analysis")
+                    st.metric("Cultural Coherence", f"{cultural.get('cultural_coherence', 0):.1%}")
+                    st.metric("Adaptation Strength", f"{cultural.get('adaptation_strength', 0):.1%}")
+                
+                # Channel activity visualization
+                if 'channels' in eeg_data and len(eeg_data['channels']) > 0:
+                    st.markdown("#### Channel Activity")
+                    
+                    # Create channel activity chart
+                    channels = list(eeg_data['channels'].keys())[:8]  # Show first 8 channels
+                    activities = [
+                        eeg_data['channels'][ch]['metrics']['mean_amplitude'] 
+                        for ch in channels
+                    ]
+                    
+                    fig = px.bar(x=channels, y=activities, title="Channel Activity Levels")
+                    fig.update_layout(height=300)
+                    st.plotly_chart(fig, use_container_width=True, key="eeg_channel_activity")
+            else:
+                st.info("Start advanced EEG processing to see results")
+    
+    # Sub-tab 3: Dark Matter Patterns
+    with dark_matter_tab:
+        st.markdown("### Dark Matter Neural Patterns")
+        st.markdown("*Simulate and analyze unconscious neural processing patterns*")
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            st.markdown("#### Dark Matter Configuration")
+            
+            # Dark matter pattern selection
+            pattern_type = st.selectbox("Pattern Type:", [
+                "subliminal_brand_exposure",
+                "unconscious_preference_formation", 
+                "emotional_priming",
+                "memory_encoding_enhancement"
+            ], format_func=lambda x: x.replace('_', ' ').title())
+            
+            intensity = st.slider("Pattern Intensity", 0.1, 1.0, 0.5)
+            
+            # Pattern description
+            pattern_descriptions = {
+                "subliminal_brand_exposure": "Ultra-weak brand signals below conscious detection threshold",
+                "unconscious_preference_formation": "Formation of brand preferences through unconscious processing",
+                "emotional_priming": "Emotional association priming for enhanced brand connection",
+                "memory_encoding_enhancement": "Enhancement of memory encoding for brand recall"
+            }
+            
+            st.info(f"**Pattern Description:** {pattern_descriptions.get(pattern_type, '')}")
+            
+            # Advanced options
+            st.markdown("#### Advanced Options")
+            use_baseline = st.checkbox("Use Existing EEG Baseline", True)
+            cultural_adjustment = st.checkbox("Cultural Adjustment", True)
+            
+            if st.button("🌌 Simulate Dark Matter Patterns", type="primary"):
+                with st.spinner("Simulating dark matter neural patterns..."):
+                    enhanced_neural = st.session_state.enhanced_neural_simulation
+                    
+                    # Get baseline EEG if available
+                    baseline_eeg = None
+                    if use_baseline and 'enhanced_neural_results' in st.session_state:
+                        baseline_eeg = st.session_state.enhanced_neural_results.get('real_time_eeg')
+                    
+                    # Simulate dark matter patterns
+                    dark_matter_results = enhanced_neural.simulate_dark_matter_patterns(
+                        baseline_eeg=baseline_eeg,
+                        pattern_type=pattern_type,
+                        intensity=intensity
+                    )
+                    
+                    # Store results
+                    if 'enhanced_neural_results' not in st.session_state:
+                        st.session_state.enhanced_neural_results = {}
+                    st.session_state.enhanced_neural_results['dark_matter'] = dark_matter_results
+                    
+                    st.success("✅ Dark matter pattern simulation completed!")
+        
+        with col2:
+            st.markdown("#### Simulation Results")
+            
+            if 'enhanced_neural_results' in st.session_state and 'dark_matter' in st.session_state.enhanced_neural_results:
+                dark_data = st.session_state.enhanced_neural_results['dark_matter']
+                
+                # Key metrics
+                st.metric("Detection Probability", f"{dark_data.get('detection_probability', 0):.1%}")
+                st.metric("Influence Strength", f"{dark_data.get('influence_strength', 0):.1%}")
+                
+                # Unconscious metrics
+                if 'unconscious_metrics' in dark_data:
+                    unconscious = dark_data['unconscious_metrics']
+                    st.markdown("#### Unconscious Processing")
+                    st.metric("Processing Index", f"{unconscious.get('unconscious_processing_index', 0):.1%}")
+                    st.metric("Subliminal Influence", f"{unconscious.get('subliminal_influence_strength', 0):.1%}")
+                    st.metric("Behavioral Impact", f"{unconscious.get('behavioral_impact_prediction', 0):.1%}")
+                
+                # Behavioral predictions
+                if 'behavioral_predictions' in dark_data:
+                    behavior = dark_data['behavioral_predictions']
+                    st.markdown("#### Behavioral Predictions")
+                    
+                    # Show top 3 predictions
+                    predictions = list(behavior.items())[:3]
+                    for pred_name, pred_value in predictions:
+                        st.metric(pred_name.replace('_', ' ').title(), f"{pred_value:.1%}")
+                
+                # Dark matter pattern visualization
+                if 'enhanced_channels' in dark_data and len(dark_data['enhanced_channels']) > 0:
+                    st.markdown("#### Pattern Strength")
+                    
+                    channels = list(dark_data['enhanced_channels'].keys())[:6]
+                    strengths = [
+                        dark_data['enhanced_channels'][ch]['resonance_strength'] 
+                        for ch in channels
+                    ]
+                    
+                    fig = px.bar(x=channels, y=strengths, title="Dark Matter Resonance by Channel")
+                    fig.update_layout(height=250)
+                    st.plotly_chart(fig, use_container_width=True, key="dark_matter_resonance")
+            else:
+                st.info("Simulate dark matter patterns to see unconscious processing analysis")
+    
+    # Sub-tab 4: Cultural Modulation
+    with cultural_tab:
+        st.markdown("### Cultural Modulation")
+        st.markdown("*Apply cultural context modulation to neural response patterns*")
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            st.markdown("#### Cultural Configuration")
+            
+            # Cultural context selection
+            cultural_context = st.selectbox("Cultural Context:", [
+                "ubuntu", "collectivist", "individualist", "high_context", "low_context"
+            ], format_func=lambda x: {
+                "ubuntu": "🤝 Ubuntu Philosophy (Community-centered)",
+                "collectivist": "👥 Collectivist Culture",
+                "individualist": "🧑 Individualist Culture", 
+                "high_context": "🌍 High-Context Culture",
+                "low_context": "📝 Low-Context Culture"
+            }.get(x, x))
+            
+            modulation_strength = st.slider("Modulation Strength", 0.1, 2.0, 1.0)
+            
+            # Cultural context descriptions
+            context_descriptions = {
+                "ubuntu": "Community-centered philosophy emphasizing interconnectedness and collective well-being",
+                "collectivist": "Group harmony and collective decision-making prioritized over individual preferences",
+                "individualist": "Personal autonomy and individual achievement emphasized",
+                "high_context": "Communication relies heavily on context, relationships, and implicit understanding",
+                "low_context": "Direct, explicit communication with minimal contextual dependencies"
+            }
+            
+            st.info(f"**Cultural Context:** {context_descriptions.get(cultural_context, '')}")
+            
+            # Source neural data selection
+            st.markdown("#### Source Neural Data")
+            source_data_type = st.selectbox("Source Data:", [
+                "real_time_eeg", "dark_matter", "new_baseline"
+            ], format_func=lambda x: {
+                "real_time_eeg": "Use Real-time EEG Data",
+                "dark_matter": "Use Dark Matter Enhanced Data",
+                "new_baseline": "Generate New Baseline"
+            }.get(x, x))
+            
+            if st.button("🌍 Apply Cultural Modulation", type="primary"):
+                with st.spinner("Applying cultural modulation to neural patterns..."):
+                    enhanced_neural = st.session_state.enhanced_neural_simulation
+                    
+                    # Get source neural data
+                    neural_data = None
+                    if source_data_type == "new_baseline":
+                        neural_data = enhanced_neural.process_real_time_eeg(duration=5.0)
+                    elif 'enhanced_neural_results' in st.session_state:
+                        neural_data = st.session_state.enhanced_neural_results.get(source_data_type)
+                    
+                    if neural_data is None:
+                        # Fallback to generating new baseline
+                        neural_data = enhanced_neural.process_real_time_eeg(duration=5.0)
+                    
+                    # Apply cultural modulation
+                    cultural_results = enhanced_neural.apply_cultural_modulation(
+                        neural_data=neural_data,
+                        cultural_context=cultural_context,
+                        modulation_strength=modulation_strength
+                    )
+                    
+                    # Store results
+                    if 'enhanced_neural_results' not in st.session_state:
+                        st.session_state.enhanced_neural_results = {}
+                    st.session_state.enhanced_neural_results['cultural_modulation'] = cultural_results
+                    
+                    st.success("✅ Cultural modulation applied successfully!")
+        
+        with col2:
+            st.markdown("#### Modulation Results")
+            
+            if 'enhanced_neural_results' in st.session_state and 'cultural_modulation' in st.session_state.enhanced_neural_results:
+                cultural_data = st.session_state.enhanced_neural_results['cultural_modulation']
+                
+                # Cultural metrics
+                if 'cultural_metrics' in cultural_data:
+                    metrics = cultural_data['cultural_metrics']
+                    st.metric("Cultural Fit", f"{metrics.get('overall_cultural_fit', 0):.1%}")
+                    st.metric("Authenticity", f"{metrics.get('cultural_authenticity', 0):.1%}")
+                    st.metric("Cross-Cultural Appeal", f"{metrics.get('cross_cultural_appeal', 0):.1%}")
+                    st.metric("Adaptation Effectiveness", f"{metrics.get('adaptation_effectiveness', 0):.1%}")
+                
+                # Cross-cultural analysis
+                if 'cross_cultural_analysis' in cultural_data:
+                    analysis = cultural_data['cross_cultural_analysis']
+                    
+                    st.markdown("#### Cross-Cultural Analysis")
+                    
+                    # Cultural universals
+                    if 'cultural_universals' in analysis:
+                        st.markdown("**Universal Elements:**")
+                        for universal in analysis['cultural_universals']:
+                            st.write(f"• {universal.replace('_', ' ').title()}")
+                    
+                    # Cultural specifics
+                    if 'cultural_specifics' in analysis:
+                        st.markdown("**Culture-Specific Elements:**")
+                        for specific in analysis['cultural_specifics']:
+                            st.write(f"• {specific.replace('_', ' ').title()}")
+                
+                # Modulation strength visualization
+                if 'modulated_channels' in cultural_data and len(cultural_data['modulated_channels']) > 0:
+                    st.markdown("#### Modulation Impact")
+                    
+                    channels = list(cultural_data['modulated_channels'].keys())[:6]
+                    modulation_factors = [
+                        cultural_data['modulated_channels'][ch]['modulation_factor'] 
+                        for ch in channels
+                    ]
+                    
+                    fig = px.bar(x=channels, y=modulation_factors, title="Cultural Modulation Factor by Channel")
+                    fig.update_layout(height=250)
+                    fig.add_hline(y=1.0, line_dash="dash", line_color="red", annotation_text="Baseline")
+                    st.plotly_chart(fig, use_container_width=True, key="cultural_modulation_factors")
+            else:
+                st.info("Apply cultural modulation to see cultural adaptation analysis")
+    
+    # Sub-tab 5: Interactive Dashboard
+    with dashboard_tab:
+        st.markdown("### Interactive Neural Dashboard")
+        st.markdown("*Comprehensive visualization and analysis of all enhanced neural monitoring features*")
+        
+        # Generate dashboard data
+        if st.button("📈 Generate Interactive Dashboard", type="primary"):
+            with st.spinner("Generating comprehensive neural dashboard..."):
+                enhanced_neural = st.session_state.enhanced_neural_simulation
+                dashboard_data = enhanced_neural.generate_interactive_dashboard_data()
+                
+                # Store dashboard data
+                if 'enhanced_neural_results' not in st.session_state:
+                    st.session_state.enhanced_neural_results = {}
+                st.session_state.enhanced_neural_results['dashboard'] = dashboard_data
+                
+                st.success("✅ Interactive dashboard generated!")
+        
+        # Display dashboard if available
+        if 'enhanced_neural_results' in st.session_state and 'dashboard' in st.session_state.enhanced_neural_results:
+            dashboard_data = st.session_state.enhanced_neural_results['dashboard']
+            
+            # Session summary
+            if 'session_summary' in dashboard_data:
+                summary = dashboard_data['session_summary']
+                st.markdown("#### Session Summary")
+                
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("Total Recordings", summary.get('total_recordings', 0))
+                with col2:
+                    st.metric("Cultural Contexts", summary.get('cultural_contexts_tested', 0))
+                with col3:
+                    st.metric("Dark Matter Sims", summary.get('dark_matter_simulations', 0))
+                with col4:
+                    st.metric("Session Duration", f"{summary.get('session_duration', 0):.1f}min")
+            
+            # Real-time metrics visualization
+            if 'real_time_metrics' in dashboard_data:
+                metrics = dashboard_data['real_time_metrics']
+                
+                st.markdown("#### Real-time Neural Metrics")
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    # Frequency distribution
+                    if 'frequency_distribution' in metrics:
+                        freq_dist = metrics['frequency_distribution']
+                        freq_names = list(freq_dist.keys())
+                        freq_values = list(freq_dist.values())
+                        
+                        fig = px.pie(values=freq_values, names=freq_names, title="Frequency Band Distribution")
+                        st.plotly_chart(fig, use_container_width=True, key="dashboard_frequency_dist")
+                
+                with col2:
+                    # Cognitive load
+                    if 'cognitive_load' in metrics:
+                        cog_load = metrics['cognitive_load']
+                        load_names = list(cog_load.keys())
+                        load_values = list(cog_load.values())
+                        
+                        fig = px.bar(x=load_names, y=load_values, title="Cognitive Load Components")
+                        fig.update_layout(xaxis_tickangle=-45)
+                        st.plotly_chart(fig, use_container_width=True, key="dashboard_cognitive_load")
+            
+            # Advanced visualizations
+            if 'advanced_visualizations' in dashboard_data:
+                viz_data = dashboard_data['advanced_visualizations']
+                
+                st.markdown("#### Advanced Visualizations")
+                
+                # Cultural comparison
+                if 'cultural_comparison' in viz_data:
+                    cultural_comp = viz_data['cultural_comparison']
+                    
+                    # Convert to DataFrame for easier plotting
+                    cultural_df = pd.DataFrame(cultural_comp).T
+                    
+                    if len(cultural_df) > 0 and 'engagement' in cultural_df.columns:
+                        fig = go.Figure()
+                        fig.add_trace(go.Scatterpolar(
+                            r=cultural_df['engagement'],
+                            theta=cultural_df.index,
+                            fill='toself',
+                            name='Cultural Engagement'
+                        ))
+                        fig.update_layout(
+                            polar=dict(
+                                radialaxis=dict(visible=True, range=[0, 1])
+                            ),
+                            showlegend=False,
+                            title="Cultural Context Comparison - Engagement"
+                        )
+                        st.plotly_chart(fig, use_container_width=True, key="dashboard_cultural_comparison")
+                
+                # Brain topology (simplified)
+                if 'brain_topology' in viz_data:
+                    st.markdown("##### Brain Activity Topology")
+                    topology = viz_data['brain_topology']
+                    
+                    if 'activity_levels' in topology:
+                        # Show top 10 most active channels
+                        activities = topology['activity_levels']
+                        top_channels = sorted(activities.items(), key=lambda x: x[1], reverse=True)[:10]
+                        
+                        channels, values = zip(*top_channels)
+                        fig = px.bar(x=list(channels), y=list(values), title="Top 10 Active Channels")
+                        fig.update_layout(xaxis_tickangle=-45)
+                        st.plotly_chart(fig, use_container_width=True, key="dashboard_brain_topology")
+            
+            # Insights and recommendations
+            if 'insights_and_recommendations' in dashboard_data:
+                insights = dashboard_data['insights_and_recommendations']
+                
+                st.markdown("#### AI-Generated Insights & Recommendations")
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.markdown("##### Key Insights")
+                    if 'key_insights' in insights:
+                        for insight in insights['key_insights']:
+                            st.write(f"💡 {insight}")
+                
+                with col2:
+                    st.markdown("##### Recommendations")
+                    if 'recommendations' in insights:
+                        for recommendation in insights['recommendations']:
+                            st.write(f"🎯 {recommendation}")
+                
+                # Performance scores
+                if 'performance_scores' in insights:
+                    scores = insights['performance_scores']
+                    st.markdown("##### Performance Scores")
+                    
+                    score_col1, score_col2, score_col3, score_col4 = st.columns(4)
+                    
+                    with score_col1:
+                        st.metric("Overall Effectiveness", f"{scores.get('overall_effectiveness', 0):.1%}")
+                    with score_col2:
+                        st.metric("Cultural Fit", f"{scores.get('cultural_fit', 0):.1%}")
+                    with score_col3:
+                        st.metric("Unconscious Influence", f"{scores.get('unconscious_influence', 0):.1%}")
+                    with score_col4:
+                        st.metric("Neural Engagement", f"{scores.get('neural_engagement', 0):.1%}")
+        else:
+            st.info("Click 'Generate Interactive Dashboard' to see comprehensive neural analysis")
+            
+            # Show sample dashboard elements
+            st.markdown("#### Sample Dashboard Elements")
+            
+            # Sample brain activity map
+            sample_channels = ['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2']
+            sample_activity = np.random.uniform(0.3, 1.0, len(sample_channels))
+            
+            fig = px.bar(x=sample_channels, y=sample_activity, title="Sample Brain Activity Map")
+            fig.update_layout(height=300)
+            st.plotly_chart(fig, use_container_width=True, key="sample_brain_activity")
+            
+            # Sample cultural comparison
+            sample_cultures = ['Ubuntu', 'Collectivist', 'Individualist', 'High-Context', 'Low-Context']
+            sample_engagement = np.random.uniform(0.5, 0.9, len(sample_cultures))
+            
+            fig = go.Figure()
+            fig.add_trace(go.Scatterpolar(
+                r=sample_engagement,
+                theta=sample_cultures,
+                fill='toself',
+                name='Sample Cultural Engagement'
+            ))
+            fig.update_layout(
+                polar=dict(
+                    radialaxis=dict(visible=True, range=[0, 1])
+                ),
+                showlegend=False,
+                title="Sample Cultural Engagement Comparison"
+            )
+            st.plotly_chart(fig, use_container_width=True, key="sample_cultural_radar")
 
 # Tab 4: Professional Visuals (Enhanced Export from PR #4)
 with tab4:
